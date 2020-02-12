@@ -3,6 +3,10 @@ uuid = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 authors = ["Takafumi Arakaki <aka.tkf@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+InitialValues = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
+Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
+
 [compat]
 julia = "1"
 
