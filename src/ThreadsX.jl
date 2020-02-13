@@ -24,13 +24,25 @@ function findall end
 # function argmin end
 function extrema end
 
+function sort end
+function sort! end
+
 module Implementations
 using Base: add_sum, mul_prod
 using InitialValues: asmonoid
 using Transducers: Filter, Map, MapSplat, ReduceIf, reduced, right, tcollect
 using ..ThreadsX
+
+@static if VERSION >= v"1.3-alpha"
+    using Base.Threads: @spawn
+else
+    # Mock `@spawn` using `@async`:
+    @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
+end
+
 include("reduce.jl")
 include("map.jl")
+include("sort.jl")
 end  # module Implementations
 
 end # baremodule ThreadX
