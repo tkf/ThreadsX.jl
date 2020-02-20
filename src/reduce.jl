@@ -1,8 +1,24 @@
-ThreadsX.reduce(op, itr; kw...) = reduce(op, Map(identity), itr; kw...)
+without_basesize(; basesize = nothing, kw...) = kw
 
-ThreadsX.mapreduce(f, op, itr; kw...) = reduce(op, Map(f), itr; kw...)
-ThreadsX.mapreduce(f, op, itr, itrs...; kw...) =
-    reduce(op, MapSplat(f), zip(itr, itrs...); kw...)
+function ThreadsX.reduce(op, itr; kw...)
+    result = reduce(op, Map(identity), itr; init = Init(op), kw...)
+    result === Init(op) && return reduce_empty(op, eltype(itr))
+    return result
+end
+
+function ThreadsX.mapreduce(f, op, itr; kw...)
+    result = reduce(op, Map(f), itr; init = Init(op), kw...)
+    result === Init(op) && return mapreduce_empty(f, op, eltype(itr))
+    return result
+end
+
+function ThreadsX.mapreduce(f, op, itr, itrs...; kw...)
+    if isempty(itr)
+        # `Base` just does `reduce(op, map(f, ...))`:
+        return mapreduce(f, op, itr, itrs...; without_basesize(; kw...)...)
+    end
+    return reduce(op, MapSplat(f), zip(itr, itrs...); kw...)
+end
 
 # Maybe refactor the function based on mapreduce into AbstractReducers.jl?
 
