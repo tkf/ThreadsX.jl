@@ -1,5 +1,7 @@
 # ThreadsX: `$nthreads x` faster functions with `Base` API
 
+[![GitHub Actions](https://github.com/tkf/ThreadsX.jl/workflows/Run%20tests/badge.svg)](https://github.com/tkf/ThreadsX.jl/actions?query=workflow%3A%22Run+tests%22)
+
 ## tl;dr
 
 Add prefix `ThreadsX.` to functions from `Base` to get some speedup,
