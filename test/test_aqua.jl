@@ -1,8 +1,22 @@
 module TestAqua
 
-using Aqua
-using ThreadsX
+import Aqua
+import ThreadsX
+using Test
 
-Aqua.test_all(ThreadsX)
+# Default `Aqua.test_all(ThreadsX)` does not work due to ambiguities
+# in upstream packages.
+
+@testset "Method ambiguity" begin
+    Aqua.test_ambiguities(ThreadsX)
+end
+
+@testset "Unbound type parameters" begin
+    Aqua.test_unbound_args(ThreadsX)
+end
+
+@testset "Undefined exports" begin
+    Aqua.test_undefined_exports(ThreadsX)
+end
 
 end  # module
