@@ -13,8 +13,9 @@ jobs:
     strategy:
       matrix:
         julia-version: ['1.3', 'nightly']
+        nthreads: ['1', '2']
       fail-fast: false
-    name: Test Julia ${{ matrix.julia-version }}
+    name: Test Julia ${{ matrix.julia-version }} nthreads=${{ matrix.nthreads }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup julia
@@ -22,6 +23,8 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/julia-runtest@master
+        env:
+          JULIA_NUM_THREADS: ${{ matrix.nthreads }}
       - uses: julia-actions/julia-uploadcodecov@latest
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
