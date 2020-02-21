@@ -22,7 +22,7 @@ jobs:
                       "JULIA_NUM_THREADS" => "2",
                       "OMP_NUM_THREADS" => "1",
                   ),
-              );
+              ),
           );
           '
       - name: Post results
