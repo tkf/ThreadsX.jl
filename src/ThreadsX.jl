@@ -28,8 +28,8 @@ function sort end
 function sort! end
 
 module Implementations
-using Base: add_sum, mul_prod
-using InitialValues: asmonoid
+using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
+using InitialValues: Init, asmonoid
 using Transducers: Filter, Map, MapSplat, ReduceIf, reduced, right, tcollect
 using ..ThreadsX
 
