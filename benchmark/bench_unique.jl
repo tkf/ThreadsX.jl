@@ -4,7 +4,7 @@ using BenchmarkTools
 using Random: shuffle
 using ThreadsX
 
-n = 10_000
+n = 1_000_000
 datasets = [
     # (label, setup)
     ("rand(1:10, $n)", rand(1:10, n)),
