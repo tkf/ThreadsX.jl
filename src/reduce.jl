@@ -85,8 +85,16 @@ function ThreadsX.findlast(f, array::AbstractArray; kw...)
 end
 
 ThreadsX.findall(itr; kw...) = ThreadsX.findall(identity, itr; kw...)
-ThreadsX.findall(f, array::AbstractArray; kw...) =
-    tcollect(Filter(i -> f(@inbounds array[i])), keys(array); simd = Val(true), kw...)
+function ThreadsX.findall(f, array::AbstractArray; kw...)
+    idxs = tcollect(
+        Filter(i -> f(@inbounds array[i])),
+        keys(array);
+        simd = Val(true),
+        kw...,
+    )
+    isempty(idxs) && return keytype(array)[]
+    return idxs
+end
 
 _minmax((min0, max0), (min1, max1)) = (min(min0, min1), max(max0, max1))
 
