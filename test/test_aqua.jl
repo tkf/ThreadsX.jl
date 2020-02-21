@@ -19,4 +19,8 @@ end
     Aqua.test_undefined_exports(ThreadsX)
 end
 
+@testset "Compare Project.toml and test/Project.toml" begin
+    Aqua.test_project_extras(ThreadsX)
+end
+
 end  # module
