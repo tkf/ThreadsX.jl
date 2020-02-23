@@ -101,3 +101,31 @@ _minmax((min0, max0), (min1, max1)) = (min(min0, min1), max(max0, max1))
 ThreadsX.extrema(itr; kw...) = ThreadsX.extrema(identity, itr; kw...)
 ThreadsX.extrema(f, itr; kw...) =
     reduce(asmonoid(_minmax), Map(x -> (y = f(x); (y, y))), itr; simd = Val(true), kw...)
+
+struct PushUnique{F} <: Function
+    f::F
+end
+PushUnique(::Type{T}) where {T} = PushUnique{Type{T}}(T)
+
+function (f!::PushUnique)((ys, seen), x)
+    fx = f!.f(x)
+    return fx in seen ? (ys, seen) : (push!!(ys, x), push!!(seen, fx))
+end
+
+# TODO: do this with public API of Transducers or make it public
+function Transducers.combine(f!::PushUnique, (ys1, seen1), (ys2, seen2))
+    seen3 = setdiff!(seen2, seen1)
+    isempty(seen3) && return (ys1, seen1)
+    return (append!!(Filter(x -> f!.f(x) in seen3), ys1, ys2), union!!(seen1, seen2))
+end
+# * Add an option to avoid re-compute `f(x)` in combine?
+# * Iterate over `seen3` if `length(seen3) << length(ys2)`?
+
+ThreadsX.unique(itr; kw...) = ThreadsX.unique(identity, itr; kw...)
+ThreadsX.unique(f, itr::AbstractVector; kw...) = reduce(
+    PushUnique(f),
+    Map(identity),
+    itr;
+    kw...,
+    init = OnInit(() -> (Empty(Vector), Empty(Set))),
+)[1]
