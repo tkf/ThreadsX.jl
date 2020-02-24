@@ -121,11 +121,22 @@ end
 # * Add an option to avoid re-compute `f(x)` in combine?
 # * Iterate over `seen3` if `length(seen3) << length(ys2)`?
 
+# Manually create a singleton callable since closure captures the
+# types as `DataType` and causes type-instability:
+struct InitUnique{X,Y} <: Function end
+@inline function (::InitUnique{X,Y})() where {X,Y}
+    if isbitstype(Y) || Base.isbitsunion(Y)
+        return (X[], Set{Y}())
+    else
+        return (X[], Empty(Set))
+    end
+end
+
 ThreadsX.unique(itr; kw...) = ThreadsX.unique(identity, itr; kw...)
-ThreadsX.unique(f, itr::AbstractVector; kw...) = reduce(
-    PushUnique(f),
-    Map(identity),
-    itr;
-    kw...,
-    init = OnInit(() -> (Empty(Vector), Empty(Set))),
-)[1]
+function ThreadsX.unique(f::F, itr::AbstractVector{X}; kw...) where {F,X}
+    # Using inference as an optimization. The result of this inference
+    # does not affect the result:
+    Y = Core.Compiler.return_type(f, Tuple{X})
+    ys, = reduce(PushUnique(f), Map(identity), itr; kw..., init = OnInit(InitUnique{X,Y}()))
+    return ys::Vector{X}
+end
