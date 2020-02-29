@@ -140,3 +140,28 @@ function ThreadsX.unique(f::F, itr::AbstractVector{X}; kw...) where {F,X}
     ys, = reduce(PushUnique(f), Map(identity), itr; kw..., init = OnInit(InitUnique{X,Y}()))
     return ys::Vector{X}
 end
+
+const _id_xf = induction(1:1)[1]  # ATM it's `Map(identity)`; TODO: better API
+
+function into(
+    ::Type{T},
+    itr;
+    basesize::Integer = length(xs) ÷ (5 * Threads.nthreads()),
+) where {T<:AbstractSet}
+    xf0, array = induction(itr)
+    length(array) <= basesize && return T(itr)
+    if xf0 === _id_xf
+        xf = Map(identity)
+    else
+        xf = Cat() |> xf0 |> Map(SingletonVector)
+    end
+    return reduce(
+        union!!,
+        xf,
+        Iterators.partition(array, basesize);
+        init = Empty(T),
+        basesize = 1,
+    )
+end
+
+ThreadsX.Set(itr; kw...) = into(Set, itr; kw...)
