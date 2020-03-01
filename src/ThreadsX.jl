@@ -24,16 +24,29 @@ function findall end
 # function argmin end
 function extrema end
 function unique end
+function Set end
 
 function sort end
 function sort! end
 
 module Implementations
-using BangBang: append!!, push!!, union!!
+using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
 using InitialValues: Init, asmonoid
 using Transducers:
-    Empty, Filter, Map, MapSplat, OnInit, ReduceIf, Transducers, reduced, right, tcollect
+    Cat,
+    Empty,
+    Filter,
+    Map,
+    MapSplat,
+    OnInit,
+    ReduceIf,
+    Transducers,
+    eduction,
+    induction,
+    reduced,
+    right,
+    tcollect
 using ..ThreadsX
 
 @static if VERSION >= v"1.3-alpha"

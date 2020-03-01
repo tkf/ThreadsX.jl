@@ -64,6 +64,8 @@ extrema(sin, 1:10)
 unique([1, 2, 6, 2])
 unique(Real[1, 1.0, 2])
 unique(x -> x^2, [1, -1, -3, 4, 3])
+Set([1, -1, -3, 4, 3])
+Set(x^2 for x in [1, -1, -3, 4, 3])
 """
 
 # An array of `(label, (f, args))`
@@ -72,7 +74,7 @@ testdata = map(split(raw_testdata, "\n", keepempty = false)) do x
     m = match(r"([^(]+)\((.*),? *\)$", x)
     f = m[1]
     args = m[2]
-    code = "$f, ($args,)"
+    code = "$f, tuple($args)"
     @debug "Evaling: $code"
     ex = Meta.parse(code)
     (x, @eval($ex))
