@@ -143,12 +143,15 @@ end
 
 const _id_xf = induction(1:1)[1]  # ATM it's `Map(identity)`; TODO: better API
 
+_extract_xf(array::AbstractArray) = induction(array)
+_extract_xf(itr) = induction(eduction(itr))
+
 function into(
     ::Type{T},
     itr;
     basesize::Integer = length(xs) ÷ (5 * Threads.nthreads()),
 ) where {T<:AbstractSet}
-    xf0, array = induction(itr)
+    xf0, array = _extract_xf(itr)
     length(array) <= basesize && return T(itr)
     if xf0 === _id_xf
         xf = Map(identity)

@@ -30,10 +30,11 @@ function sort end
 function sort! end
 
 module Implementations
-using BangBang: append!!, push!!, union!!
+using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
 using InitialValues: Init, asmonoid
 using Transducers:
+    Cat,
     Empty,
     Filter,
     Map,
@@ -41,6 +42,7 @@ using Transducers:
     OnInit,
     ReduceIf,
     Transducers,
+    eduction,
     induction,
     reduced,
     right,
