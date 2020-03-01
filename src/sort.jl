@@ -28,7 +28,6 @@ end
 end
 
 function mergesorted_basecase!(dest::D, left, right, order) where {D}
-    dest = restack(dest)
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
