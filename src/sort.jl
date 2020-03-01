@@ -12,20 +12,29 @@ function mergesorted!(dest, left, right, order, basesize)
     end
     # length(c) > 0 && length(b) > 0 && @assert Base.lt(order, last(c), first(b))  # stable sort
     ac, bd = halve(dest, length(a) + length(c))
-    task = @spawn mergesorted!(ac, a, c, order, basesize)
+    task = let ac = ac, c = c, a = a
+        @spawn mergesorted!(ac, a, c, order, basesize)
+    end
     mergesorted!(bd, b, d, order, basesize)
     wait(task)
     return dest
 end
 
-function mergesorted_basecase!(dest, left, right, order)
+@inline function _copyto!(ys, xs)
+    for i in eachindex(ys, xs)
+        @inbounds ys[i] = xs[i]
+    end
+    return ys
+end
+
+function mergesorted_basecase!(dest::D, left, right, order) where {D}
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
-        copyto!(dest, right)
+        _copyto!(dest, right)
         return dest
     elseif isempty(right)
-        copyto!(dest, left)
+        _copyto!(dest, left)
         return dest
     end
     @assert length(dest) == length(left) + length(right)
@@ -40,7 +49,7 @@ function mergesorted_basecase!(dest, left, right, order)
             j += 1
             k += 1
             if j > lastindex(right)
-                copyto!((@view dest[k:end]), (@view left[i:end]))
+                _copyto!((@view dest[k:end]), (@view left[i:end]))
                 break
             end
             b = @inbounds right[j]
@@ -49,7 +58,7 @@ function mergesorted_basecase!(dest, left, right, order)
             i += 1
             k += 1
             if i > lastindex(left)
-                copyto!((@view dest[k:end]), (@view right[j:end]))
+                _copyto!((@view dest[k:end]), (@view right[j:end]))
                 break
             end
             a = @inbounds left[i]
@@ -67,7 +76,7 @@ function halveat(arr::AbstractArray, i)
     return (left, right)
 end
 
-function _mergesort!(xs, order, basesort!, basesize, tmp = nothing)
+function _mergesort!(xs, order, basesort!::F, basesize, tmp = nothing) where {F}
     if length(xs) <= basesize
         basesort!(xs; order = order)
         return xs
@@ -77,7 +86,7 @@ function _mergesort!(xs, order, basesort!, basesize, tmp = nothing)
     task = @spawn _mergesort!(left, order, basesort!, basesize, left_tmp)
     _mergesort!(right, order, basesort!, basesize, right_tmp)
     wait(task)
-    mergesorted!(xs, copyto!(left_tmp, left), copyto!(right_tmp, right), order, basesize)
+    mergesorted!(xs, _copyto!(left_tmp, left), _copyto!(right_tmp, right), order, basesize)
     return xs
 end
 
