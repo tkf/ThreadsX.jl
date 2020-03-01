@@ -1,8 +1,10 @@
 module BenchSort
 
 using BenchmarkTools
-using Random: shuffle
+using Random: Random, shuffle
 using ThreadsX
+
+Random.seed!(1234)
 
 n = 10_000
 datasets = [
