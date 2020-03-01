@@ -1,4 +1,24 @@
-function mergesorted!(dest, left, right, order)
+function mergesorted!(dest, left, right, order, basesize)
+    @assert length(dest) == length(left) + length(right)
+    if length(left) <= basesize || length(right) <= basesize
+        return mergesorted_basecase!(dest, left, right, order)
+    end
+    if length(left) < length(right)
+        c, d = halve(right)
+        a, b = halveat(left, searchsortedlast(left, last(c), order) + 1)
+    else
+        a, b = halve(left)
+        c, d = halveat(right, searchsortedfirst(right, first(b), order))
+    end
+    # length(c) > 0 && length(b) > 0 && @assert Base.lt(order, last(c), first(b))  # stable sort
+    ac, bd = halve(dest, length(a) + length(c))
+    task = @spawn mergesorted!(ac, a, c, order, basesize)
+    mergesorted!(bd, b, d, order, basesize)
+    wait(task)
+    return dest
+end
+
+function mergesorted_basecase!(dest, left, right, order)
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
@@ -39,24 +59,25 @@ function mergesorted!(dest, left, right, order)
     return dest
 end
 
-# Import from Transducers?
-function halve(arr::AbstractArray)
-    mid = length(arr) ÷ 2
-    left = @view arr[firstindex(arr):firstindex(arr)-1+mid]
-    right = @view arr[firstindex(arr)+mid:end]
+halve(arr::AbstractArray, mid = length(arr) ÷ 2) = halveat(arr, firstindex(arr) + mid)
+
+function halveat(arr::AbstractArray, i)
+    left = @view arr[firstindex(arr):i-1]
+    right = @view arr[i:end]
     return (left, right)
 end
 
-function _mergesort!(xs, order, basesort!, basesize)
+function _mergesort!(xs, order, basesort!, basesize, tmp = nothing)
     if length(xs) <= basesize
         basesort!(xs; order = order)
         return xs
     end
     left, right = halve(xs)
-    task = @spawn _mergesort!(left, order, basesort!, basesize)
-    _mergesort!(right, order, basesort!, basesize)
+    left_tmp, right_tmp = halve(tmp === nothing ? similar(xs) : tmp)
+    task = @spawn _mergesort!(left, order, basesort!, basesize, left_tmp)
+    _mergesort!(right, order, basesort!, basesize, right_tmp)
     wait(task)
-    mergesorted!(xs, copy(left), right, order)
+    mergesorted!(xs, copyto!(left_tmp, left), copyto!(right_tmp, right), order, basesize)
     return xs
 end
 
