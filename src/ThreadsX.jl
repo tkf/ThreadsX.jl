@@ -46,6 +46,7 @@ using Transducers:
     eduction,
     induction,
     reduced,
+    restack,
     right,
     tcollect
 using ..ThreadsX

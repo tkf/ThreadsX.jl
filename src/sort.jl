@@ -18,7 +18,10 @@ function mergesorted!(dest, left, right, order, basesize)
     return dest
 end
 
-function mergesorted_basecase!(dest, left, right, order)
+@noinline function mergesorted_basecase!(dest, left, right, order)
+    dest = restack(dest)
+    left = restack(left)
+    right = restack(right)
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
