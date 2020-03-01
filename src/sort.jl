@@ -18,6 +18,15 @@ function mergesorted!(dest, left, right, order, basesize)
     return dest
 end
 
+@inline function _copyto!(ys, xs)
+    ys = restack(ys)
+    xs = restack(xs)
+    for i in eachindex(ys, xs)
+        @inbounds ys[i] = xs[i]
+    end
+    return ys
+end
+
 @noinline function mergesorted_basecase!(dest::D, left, right, order) where {D}
     dest = restack(dest)
     left = restack(left)
@@ -25,10 +34,10 @@ end
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
-        copyto!(dest, right)
+        _copyto!(dest, right)
         return dest
     elseif isempty(right)
-        copyto!(dest, left)
+        _copyto!(dest, left)
         return dest
     end
     @assert length(dest) == length(left) + length(right)
@@ -43,7 +52,7 @@ end
             j += 1
             k += 1
             if j > lastindex(right)
-                copyto!((@view dest[k:end]), (@view left[i:end]))
+                _copyto!((@view dest[k:end]), (@view left[i:end]))
                 break
             end
             b = @inbounds right[j]
@@ -52,7 +61,7 @@ end
             i += 1
             k += 1
             if i > lastindex(left)
-                copyto!((@view dest[k:end]), (@view right[j:end]))
+                _copyto!((@view dest[k:end]), (@view right[j:end]))
                 break
             end
             a = @inbounds left[i]
@@ -80,7 +89,7 @@ function _mergesort!(xs, order, basesort!, basesize, tmp = nothing)
     task = @spawn _mergesort!(left, order, basesort!, basesize, left_tmp)
     _mergesort!(right, order, basesort!, basesize, right_tmp)
     wait(task)
-    mergesorted!(xs, copyto!(left_tmp, left), copyto!(right_tmp, right), order, basesize)
+    mergesorted!(xs, _copyto!(left_tmp, left), _copyto!(right_tmp, right), order, basesize)
     return xs
 end
 
