@@ -151,6 +151,7 @@ function into(
     itr;
     basesize::Integer = max(1, length(itr) ÷ (5 * Threads.nthreads())),
 ) where {T<:AbstractSet}
+    @argcheck basesize >= 1
     xf0, array = _extract_xf(itr)
     length(array) <= basesize && return T(itr)
     if xf0 === _id_xf

@@ -30,6 +30,7 @@ function sort end
 function sort! end
 
 module Implementations
+using ArgCheck: @argcheck
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
 using InitialValues: Init, asmonoid
