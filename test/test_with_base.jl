@@ -82,6 +82,9 @@ end
 
 @testset "$label" for (label, (f, args)) in testdata
     g = getproperty(ThreadsX, nameof(f))
+    @testset "default basesize" begin
+        @test g(args...) == f(args...)
+    end
     @testset for basesize in 1:3
         @test g(args...; basesize = basesize) == f(args...)
     end
