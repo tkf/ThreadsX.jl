@@ -74,7 +74,7 @@ testdata = map(split(raw_testdata, "\n", keepempty = false)) do x
     m = match(r"([^(]+)\((.*),? *\)$", x)
     f = m[1]
     args = m[2]
-    code = "$f, ($args,)"
+    code = "$f, tuple($args)"
     @debug "Evaling: $code"
     ex = Meta.parse(code)
     (x, @eval($ex))
