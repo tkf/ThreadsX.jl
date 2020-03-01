@@ -21,8 +21,6 @@ function mergesorted!(dest, left, right, order, basesize)
 end
 
 @inline function _copyto!(ys, xs)
-    ys = restack(ys)
-    xs = restack(xs)
     for i in eachindex(ys, xs)
         @inbounds ys[i] = xs[i]
     end
@@ -31,8 +29,6 @@ end
 
 function mergesorted_basecase!(dest::D, left, right, order) where {D}
     dest = restack(dest)
-    left = restack(left)
-    right = restack(right)
     # @assert issorted(left; order = order)
     # @assert issorted(right; order = order)
     if isempty(left)
