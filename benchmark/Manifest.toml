@@ -199,7 +199,7 @@ deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[ThreadsX]]
-deps = ["BangBang", "InitialValues", "Transducers"]
+deps = ["ArgCheck", "BangBang", "InitialValues", "Transducers"]
 path = ".."
 uuid = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 version = "0.1.0"
