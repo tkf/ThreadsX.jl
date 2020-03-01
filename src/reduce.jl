@@ -149,7 +149,7 @@ _extract_xf(itr) = induction(eduction(itr))
 function into(
     ::Type{T},
     itr;
-    basesize::Integer = length(xs) ÷ (5 * Threads.nthreads()),
+    basesize::Integer = max(1, length(itr) ÷ (5 * Threads.nthreads())),
 ) where {T<:AbstractSet}
     xf0, array = _extract_xf(itr)
     length(array) <= basesize && return T(itr)
