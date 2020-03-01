@@ -12,7 +12,9 @@ function mergesorted!(dest, left, right, order, basesize)
     end
     # length(c) > 0 && length(b) > 0 && @assert Base.lt(order, last(c), first(b))  # stable sort
     ac, bd = halve(dest, length(a) + length(c))
-    task = @spawn mergesorted!(ac, a, c, order, basesize)
+    task = let ac = ac, c = c, a = a
+        @spawn mergesorted!(ac, a, c, order, basesize)
+    end
     mergesorted!(bd, b, d, order, basesize)
     wait(task)
     return dest
@@ -79,7 +81,7 @@ function halveat(arr::AbstractArray, i)
     return (left, right)
 end
 
-function _mergesort!(xs, order, basesort!, basesize, tmp = nothing)
+function _mergesort!(xs, order, basesort!::F, basesize, tmp = nothing) where {F}
     if length(xs) <= basesize
         basesort!(xs; order = order)
         return xs
