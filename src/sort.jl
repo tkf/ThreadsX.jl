@@ -29,7 +29,7 @@ end
     return ys
 end
 
-@noinline function mergesorted_basecase!(dest::D, left, right, order) where {D}
+function mergesorted_basecase!(dest::D, left, right, order) where {D}
     dest = restack(dest)
     left = restack(left)
     right = restack(right)
