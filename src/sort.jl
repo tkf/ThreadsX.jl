@@ -18,7 +18,7 @@ function mergesorted!(dest, left, right, order, basesize)
     return dest
 end
 
-@noinline function mergesorted_basecase!(dest, left, right, order)
+@noinline function mergesorted_basecase!(dest::D, left, right, order) where {D}
     dest = restack(dest)
     left = restack(left)
     right = restack(right)
