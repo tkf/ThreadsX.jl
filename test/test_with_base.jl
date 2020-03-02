@@ -90,22 +90,23 @@ end
     end
 end
 
-function test_foreach(test)
+function test_all_implementations(test, name)
     @testset "Base" begin
-        test(Base.foreach)
+        test(getproperty(Base, name))
     end
     @testset "ThreadsX" begin
+        f = getproperty(ThreadsX, name)
         @testset "default basesize" begin
-            test(ThreadsX.foreach)
+            test(f)
         end
         @testset for basesize in 1:3
-            test((args...) -> ThreadsX.foreach(args...; basesize = basesize))
+            test((args...) -> f(args...; basesize = basesize))
         end
     end
 end
 
 @testset "foreach(x -> ys[x] = x^2, 1:5)" begin
-    test_foreach() do foreach
+    test_all_implementations(:foreach) do foreach
         xs = 1:5
         ys = zero(xs)
         foreach(xs) do x
@@ -116,13 +117,32 @@ end
 end
 
 @testset "foreach((i, x) -> ys[i] = x^2, eachindex(ys, xs), xs)" begin
-    test_foreach() do foreach
+    test_all_implementations(:foreach) do foreach
         xs = 11:15
         ys = zero(xs)
         foreach(eachindex(ys, xs), xs) do i, x
             ys[i] = x^2
         end
         @test ys == xs .^ 2
+    end
+end
+
+@testset "map!(x -> x^2, ys, xs)" begin
+    test_all_implementations(:map!) do map!
+        xs = 11:15
+        ys = zero(xs)
+        map!(x -> x^2, ys, xs)
+        @test ys == xs .^ 2
+    end
+end
+
+@testset "map!(+, ys, xs1, xs2)" begin
+    test_all_implementations(:map!) do map!
+        xs1 = 1:5
+        xs2 = xs1 .* 10
+        ys = zero(xs1)
+        map!(+, ys, xs1, xs2)
+        @test ys == xs1 .+ xs2
     end
 end
 

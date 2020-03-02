@@ -54,3 +54,8 @@ ThreadsX.foreach(
 ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
     ThreadsX.foreach(f, map(vec, tuple(array, arrays...))...; kw...)
 =#
+
+ThreadsX.map!(f, dest, array, arrays...; kw...) =
+    ThreadsX.foreach(referenceable(dest), array, arrays...; kw...) do y, xs...
+        y[] = f(xs...)
+    end
