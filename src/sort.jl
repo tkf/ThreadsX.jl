@@ -97,7 +97,7 @@ mergesort!(
     rev::Bool = false,
     order = Base.Forward,
     basesort! = sort!,
-    basesize::Integer = length(xs) ÷ (5 * Threads.nthreads()),
+    basesize::Integer = default_basesize(xs),
 ) = _mergesort!(xs, Base.ord(lt, by, rev, order), basesort!, basesize)
 
 ThreadsX.sort(xs; kwargs...) = ThreadsX.sort!(Base.copymutable(xs); kwargs...)

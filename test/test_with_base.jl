@@ -90,4 +90,40 @@ end
     end
 end
 
+function test_foreach(test)
+    @testset "Base" begin
+        test(Base.foreach)
+    end
+    @testset "ThreadsX" begin
+        @testset "default basesize" begin
+            test(ThreadsX.foreach)
+        end
+        @testset for basesize in 1:3
+            test((args...) -> ThreadsX.foreach(args...; basesize = basesize))
+        end
+    end
+end
+
+@testset "foreach(x -> ys[x] = x^2, 1:5)" begin
+    test_foreach() do foreach
+        xs = 1:5
+        ys = zero(xs)
+        foreach(xs) do x
+            ys[x] = x^2
+        end
+        @test ys == xs .^ 2
+    end
+end
+
+@testset "foreach((i, x) -> ys[i] = x^2, eachindex(ys, xs), xs)" begin
+    test_foreach() do foreach
+        xs = 11:15
+        ys = zero(xs)
+        foreach(eachindex(ys, xs), xs) do i, x
+            ys[i] = x^2
+        end
+        @test ys == xs .^ 2
+    end
+end
+
 end  # module

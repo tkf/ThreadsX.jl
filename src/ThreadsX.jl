@@ -26,6 +26,8 @@ function extrema end
 function unique end
 function Set end
 
+function foreach end
+
 function sort end
 function sort! end
 
@@ -57,6 +59,7 @@ else
     @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
 end
 
+include("utils.jl")
 include("reduce.jl")
 include("map.jl")
 include("sort.jl")
