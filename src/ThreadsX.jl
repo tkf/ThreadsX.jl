@@ -27,6 +27,7 @@ function unique end
 function Set end
 
 function foreach end
+function map! end
 
 function sort end
 function sort! end
@@ -36,6 +37,7 @@ using ArgCheck: @argcheck
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
 using InitialValues: Init, asmonoid
+using Referenceables: referenceable
 using Transducers:
     Cat,
     Empty,

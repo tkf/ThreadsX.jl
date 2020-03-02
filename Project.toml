@@ -7,6 +7,7 @@ version = "0.1.0"
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
 BangBang = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
 InitialValues = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
+Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
 Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 
 [compat]
