@@ -25,14 +25,11 @@ end
 
 function ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_basesize(xs))
     @argcheck basesize >= 1
-    parts = Iterators.partition(xs, basesize)
-    chan = Channel{eltype(parts)}(min(length(parts), 1024)) do chan
-        for p in parts
-            put!(chan, p)
-        end
-    end
-    @sync for _ in 1:Threads.nthreads()
-        @spawn foreach(p -> foreach(f, p), chan)
+    # TODO: Switch to `Channel`-based implementation when
+    # `length(partition(xs, basesize))` is much larger than
+    # `nthreads`?
+    @sync for p in Iterators.partition(xs, basesize)
+        @spawn foreach(f, p)
     end
     return
 end
@@ -47,7 +44,7 @@ ThreadsX.foreach(
     kw...,
 ) where {N} =
     ThreadsX.foreach(eachindex(array, arrays...); kw...) do i
-        f(array[i], map(x -> x[i], arrays)...)
+        @inbounds f(array[i], map(x -> x[i], arrays)...)
     end
 
 #=
@@ -55,7 +52,9 @@ ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
     ThreadsX.foreach(f, map(vec, tuple(array, arrays...))...; kw...)
 =#
 
-ThreadsX.map!(f, dest, array, arrays...; kw...) =
+function ThreadsX.map!(f, dest, array, arrays...; kw...)
     ThreadsX.foreach(referenceable(dest), array, arrays...; kw...) do y, xs...
         y[] = f(xs...)
     end
+    return dest
+end
