@@ -67,6 +67,7 @@ include("utils.jl")
 include("reduce.jl")
 include("map.jl")
 include("sort.jl")
+include("countingsort.jl")
 end  # module Implementations
 
 Implementations.@doc (Implementations.@doc Implementations.ParallelMergeSortAlg) ->
