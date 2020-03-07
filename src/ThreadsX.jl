@@ -35,9 +35,11 @@ function sort! end
 module Implementations
 using ArgCheck: @argcheck
 using BangBang: SingletonVector, append!!, push!!, union!!
-using Base: add_sum, mapreduce_empty, mul_prod, reduce_empty
+using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
+using ConstructionBase: setproperties
 using InitialValues: Init, asmonoid
 using Referenceables: referenceable
+using Setfield: @set
 using Transducers:
     Cat,
     Empty,
@@ -66,5 +68,8 @@ include("reduce.jl")
 include("map.jl")
 include("sort.jl")
 end  # module Implementations
+
+Implementations.@doc (Implementations.@doc Implementations.ParallelMergeSortAlg) ->
+const MergeSort = Implementations.ParallelMergeSortAlg()
 
 end # baremodule ThreadX

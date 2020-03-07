@@ -1,3 +1,79 @@
+abstract type ParallelSortAlgorithm <: Base.Sort.Algorithm end
+(alg::ParallelSortAlgorithm)(; kw...) = setproperties(alg; kw...)
+
+"""
+    ThreadsX.MergeSort
+
+Parallel merge sort algorithm.
+
+# Examples
+```julia
+sort!(x; alg = ThreadsX.MergeSort)
+ThreadsX.sort!(x; alg = ThreadsX.MergeSort)
+```
+
+`ThreadsX.MergeSort` is a `Base.Sort.Algorithm`, just like
+`Base.MergeSort`.  It has a few properties for configuring the
+algorithm.
+
+```jldoctest
+julia> using ThreadsX
+
+julia> ThreadsX.MergeSort isa Base.Sort.Algorithm
+true
+
+julia> ThreadsX.MergeSort.smallsort === Base.Sort.DEFAULT_STABLE
+true
+```
+
+The properties can be "set" by calling the algorithm object itself.  A
+new algorithm object with new properties given by the keyword
+arguments is returned:
+
+```jldoctest setup = :(using ThreadsX)
+julia> alg = ThreadsX.MergeSort(smallsort = QuickSort) :: Base.Sort.Algorithm;
+
+julia> alg.smallsort == QuickSort
+true
+
+julia> alg2 = alg(basesize = 64, smallsort = InsertionSort);
+
+julia> alg2.basesize
+64
+
+julia> alg2.smallsort === InsertionSort
+true
+```
+
+# Properties
+- `smallsort :: Base.Sort.Algorithm`: Default to `Base.Sort.DEFAULT_STABLE`.
+- `smallsize :: Union{Nothing,Integer}`: Size of array under which `smallsort`
+  algorithm is used.  `nothing` (default) means to use `basesize`.
+- `basesize :: Union{Nothing,Integer}`.  Base case size of parallel merge.
+  `nothing` (default) means to choose the default size.
+"""
+Base.@kwdef struct ParallelMergeSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortAlgorithm
+    smallsort::Alg = Base.Sort.DEFAULT_STABLE
+    smallsize::SmallSize = nothing  # lazily determined
+    basesize::BaseSize = nothing  # lazily determined
+end
+
+function Base.sort!(
+    v::AbstractVector,
+    lo::Integer,
+    hi::Integer,
+    a::ParallelMergeSortAlg,
+    o::Ordering,
+)
+    if a.basesize === nothing
+        a = @set a.basesize = default_basesize(hi - lo + 1)
+    end
+    if a.smallsize === nothing
+        a = @set a.smallsize = a.basesize
+    end
+    return _mergesort!(view(v, lo:hi), a, o)
+end
+
 function mergesorted!(dest, left, right, order, basesize)
     @assert length(dest) == length(left) + length(right)
     if length(left) <= basesize || length(right) <= basesize
@@ -76,29 +152,42 @@ function halveat(arr::AbstractArray, i)
     return (left, right)
 end
 
-function _mergesort!(xs, order, basesort!::F, basesize, tmp = nothing) where {F}
-    if length(xs) <= basesize
-        basesort!(xs; order = order)
+function _mergesort!(xs, alg, order, tmp = nothing)
+    if length(xs) <= alg.smallsize
+        sort!(xs, alg.smallsort, order)
         return xs
     end
     left, right = halve(xs)
     left_tmp, right_tmp = halve(tmp === nothing ? similar(xs) : tmp)
-    task = @spawn _mergesort!(left, order, basesort!, basesize, left_tmp)
-    _mergesort!(right, order, basesort!, basesize, right_tmp)
+    task = @spawn _mergesort!(left, alg, order, left_tmp)
+    _mergesort!(right, alg, order, right_tmp)
     wait(task)
-    mergesorted!(xs, _copyto!(left_tmp, left), _copyto!(right_tmp, right), order, basesize)
+    mergesorted!(
+        xs,
+        _copyto!(left_tmp, left),
+        _copyto!(right_tmp, right),
+        order,
+        alg.basesize,
+    )
     return xs
 end
 
-mergesort!(
-    xs;
-    lt = isless,
-    by = identity,
-    rev::Bool = false,
-    order = Base.Forward,
-    basesort! = sort!,
-    basesize::Integer = default_basesize(xs),
-) = _mergesort!(xs, Base.ord(lt, by, rev, order), basesort!, basesize)
-
 ThreadsX.sort(xs; kwargs...) = ThreadsX.sort!(Base.copymutable(xs); kwargs...)
-ThreadsX.sort!(xs; kwargs...) = mergesort!(xs; kwargs...)
+
+function ThreadsX.sort!(
+    xs;
+    smallsort = Base.Sort.DEFAULT_STABLE,
+    smallsize = nothing,
+    basesize = nothing,
+    kwargs...,
+)
+    return sort!(
+        xs;
+        alg = ParallelMergeSortAlg(
+            smallsort = smallsort,
+            smallsize = smallsize,
+            basesize = basesize,
+        ),
+        kwargs...,
+    )
+end

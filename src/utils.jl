@@ -1,1 +1,2 @@
-default_basesize(xs) = max(1, length(xs) ÷ (5 * Threads.nthreads()))
+default_basesize(n::Integer) = max(1, n ÷ (5 * Threads.nthreads()))
+default_basesize(xs) = default_basesize(length(xs))
