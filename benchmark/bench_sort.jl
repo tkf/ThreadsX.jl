@@ -17,7 +17,7 @@ suite = BenchmarkGroup()
 
 for (label, xs) in datasets
     s = suite[label] = BenchmarkGroup()
-    for algname in [:MergeSort, :QuickSort, :StableQuickSort]
+    for algname in [:QuickSort, :StableQuickSort]
         alg = getproperty(ThreadsX, algname)
         s["ThreadsX.$algname"] =
             @benchmarkable(ThreadsX.sort!(xs; alg = $alg), setup = (xs = copy($xs)))
