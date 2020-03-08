@@ -98,7 +98,7 @@ end
 
 @inline function _copyto!(ys, xs)
     for i in eachindex(ys, xs)
-        @inbounds ys[i] = xs[i]
+        ys[i] = xs[i]
     end
     return ys
 end
@@ -117,27 +117,27 @@ function mergesorted_basecase!(dest::D, left, right, order) where {D}
     i = firstindex(left)
     j = firstindex(right)
     k = firstindex(dest)
-    a = @inbounds left[i]
-    b = @inbounds right[j]
+    a = left[i]
+    b = right[j]
     while true
         if Base.lt(order, b, a)
-            @inbounds dest[k] = b
+            dest[k] = b
             j += 1
             k += 1
             if j > lastindex(right)
                 _copyto!((@view dest[k:end]), (@view left[i:end]))
                 break
             end
-            b = @inbounds right[j]
+            b = right[j]
         else
-            @inbounds dest[k] = a
+            dest[k] = a
             i += 1
             k += 1
             if i > lastindex(left)
                 _copyto!((@view dest[k:end]), (@view right[j:end]))
                 break
             end
-            a = @inbounds left[i]
+            a = left[i]
         end
     end
     # @assert issorted(dest; order = order)

@@ -64,7 +64,7 @@ ThreadsX.all(f, itr; kw...) = reduce(
 ThreadsX.findfirst(itr; kw...) = ThreadsX.findfirst(identity, itr; kw...)
 ThreadsX.findfirst(f, array::AbstractArray; kw...) = reduce(
     right,
-    ReduceIf(i -> f(@inbounds array[i])),
+    ReduceIf(i -> f(array[i])),
     keys(array);
     init = nothing,
     simd = Val(true),
@@ -76,7 +76,7 @@ function ThreadsX.findlast(f, array::AbstractArray; kw...)
     idx = keys(array)
     return reduce(
         right,
-        Map(i -> idx[i]) |> ReduceIf(i -> f(@inbounds array[i])),
+        Map(i -> idx[i]) |> ReduceIf(i -> f(array[i])),
         lastindex(idx):-1:firstindex(idx);
         init = nothing,
         simd = Val(true),
@@ -87,7 +87,7 @@ end
 ThreadsX.findall(itr; kw...) = ThreadsX.findall(identity, itr; kw...)
 function ThreadsX.findall(f, array::AbstractArray; kw...)
     idxs = tcollect(
-        Filter(i -> f(@inbounds array[i])),
+        Filter(i -> f(array[i])),
         keys(array);
         simd = Val(true),
         kw...,

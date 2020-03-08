@@ -10,7 +10,7 @@ function maptasks(f, xs)
 end
 
 function exclusive_cumsum!(xs, acc = zero(eltype(xs)))
-    @inbounds for i in eachindex(xs)
+    for i in eachindex(xs)
         xs[i], x = acc, xs[i]
         acc += x
     end
@@ -32,13 +32,13 @@ Unroll{N}(xs::A) where {N,A} = Unroll{N,A}(xs)
     while i <= n
         acc = let i = i
             _foldlargs(acc, ntuple(identity, Val{N}())...) do acc, k
-                op(acc, @inbounds itr.xs[i + (k - 1)])
+                op(acc, itr.xs[i + (k - 1)])
             end
         end
         i += N
     end
     while i <= lastindex(itr.xs)
-        acc = op(acc, @inbounds itr.xs[i])
+        acc = op(acc, itr.xs[i])
         i += 1
     end
     return acc

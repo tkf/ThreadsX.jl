@@ -35,12 +35,12 @@ function sort_int_range!(
     offs = 1 - minval
 
     where = fill(0, rangelen)
-    @inbounds for i in eachindex(x)
+    for i in eachindex(x)
         where[x[i]+offs] += 1
     end
 
     idx = firstindex(x)
-    @inbounds for i in maybereverse(1:rangelen)
+    for i in maybereverse(1:rangelen)
         lastidx = idx + where[i] - 1
         val = i - offs
         for j in idx:lastidx
@@ -75,7 +75,7 @@ function parallel_sort_int_range!(
     pushfirst!(where, 0)
     acc = 0
     for i in 2:length(where)
-        acc = @inbounds where[i] += acc
+        acc = where[i] += acc
     end
 
     indices = Iterators.partition(1:rangelen, cld(rangelen, nthreads))
@@ -92,7 +92,7 @@ end
 function count_ints(xs, rangelen, minval)
     offs = 1 - minval
     where = fill(0, rangelen)
-    @inbounds for x in xs
+    for x in xs
         where[x+offs] += 1
     end
     where
@@ -100,7 +100,7 @@ end
 
 function scatter_ints!(x, minval, offsets, indices)
     offs = 1 - minval
-    @inbounds for i in indices
+    for i in indices
         val = i - offs
         for j in offsets[i]:offsets[i+1]-1
             x[firstindex(x)+j] = val

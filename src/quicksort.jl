@@ -123,7 +123,7 @@ partition_sizes!(pivot, order) = ((xs, cs),) -> partition_sizes!(xs, cs, pivot, 
 function partition_sizes!(xs, cs, pivot, order)
     nbelows = 0
     nequals = 0
-    @inbounds for i in eachindex(xs, cs)
+    for i in eachindex(xs, cs)
         x = xs[i]
         b = Base.lt(order, x, pivot)
         a = Base.lt(order, pivot, x)
@@ -146,15 +146,15 @@ function unsafe_quicksort_scatter!(
     e = equal_offset
     a = above_offset
     _foldl((b, a, e), Unroll{4}(eachindex(xs_chunk, cs_chunk))) do (b, a, e), i
-        @inbounds x = xs_chunk[i]
-        @inbounds c = cs_chunk[i]
+        x = xs_chunk[i]
+        c = cs_chunk[i]
         is_equal = c == 0
         is_above = c > 0
         is_below = c < 0
         e += Int(is_equal)
         a += Int(is_above)
         b += Int(is_below)
-        @inbounds ys[ifelse(is_equal, e, ifelse(is_above, a, b))] = x
+        ys[ifelse(is_equal, e, ifelse(is_above, a, b))] = x
         (b, a, e)
     end
     return
