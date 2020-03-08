@@ -6,9 +6,14 @@ using ThreadsX
 
 @testset for basesize in 1:8
     @testset for alg in [ThreadsX.MergeSort, ThreadsX.QuickSort, ThreadsX.StableQuickSort]
-        @test ThreadsX.sort!(shuffle([1:1000;]), basesize = basesize) == 1:1000
-        @test ThreadsX.sort!(shuffle([1:1000;]), basesize = basesize, by = inv) == 1000:-1:1
-        @test ThreadsX.sort!([1:1000;], basesize = basesize) == 1:1000
+        @test ThreadsX.sort!(shuffle([1:1000;]); alg = alg, basesize = basesize) == 1:1000
+        @test ThreadsX.sort!(
+            shuffle([1:1000;]);
+            alg = alg,
+            basesize = basesize,
+            by = inv,
+        ) == 1000:-1:1
+        @test ThreadsX.sort!([1:1000;]; alg = alg, basesize = basesize) == 1:1000
     end
 end
 
