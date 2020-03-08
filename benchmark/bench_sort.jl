@@ -6,7 +6,7 @@ using ThreadsX
 
 Random.seed!(1234)
 
-n = 10_000
+n = 100_000
 datasets = [
     # (label, setup)
     ("random", shuffle(1:n)),
