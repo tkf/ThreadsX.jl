@@ -69,7 +69,7 @@ function _quicksort!(
 
     @sync begin
         for (i, (xs_chunk, cs_chunk)) in enumerate(chunks)
-            singleton_chunkid[i] == 0 && continue
+            singleton_chunkid[i] > 0 && continue
             @spawn unsafe_quicksort_scatter!(
                 ys,
                 xs_chunk,
