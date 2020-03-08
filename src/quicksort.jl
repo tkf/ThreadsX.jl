@@ -44,7 +44,6 @@ function _quicksort!(
         # return ys
         return sort!(ys, alg.smallsort, order)
     end
-    # @show xs[1]
     pivot = xs[end÷2]
 
     # TODO: Calculate extrema during the first pass if it's possible
@@ -61,8 +60,13 @@ function _quicksort!(
     naboves = [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
     @check length(chunks) == length(nbelows) == length(nequals) == length(naboves)
     @check all(>=(0), naboves)
-    singleton_chunks =
-        [+(0, map(!=(0), ns)...) == 1 for ns in zip(nbelows, nequals, naboves)]
+    singleton_chunkid = map(nbelows, nequals, naboves) do nb, ne, na
+        if (nb > 0) + (ne > 0) + (na > 0) == 1
+            return 1 * (nb > 0) + 2 * (ne > 0) + 3 * (na > 0)
+        else
+            return 0
+        end
+    end
 
     below_offsets = copy(nbelows)
     equal_offsets = copy(nequals)
@@ -71,12 +75,10 @@ function _quicksort!(
     acc = exclusive_cumsum!(equal_offsets, acc)
     acc = exclusive_cumsum!(above_offsets, acc)
     @check acc == length(xs)
-    # @show nbelows nequals naboves
-    # @show below_offsets equal_offsets above_offsets
 
     @sync begin
         for (i, (xs_chunk, cs_chunk)) in enumerate(chunks)
-            singleton_chunks[i] && continue
+            singleton_chunkid[i] == 0 && continue
             @spawn unsafe_quicksort_scatter!(
                 ys,
                 xs_chunk,
@@ -87,12 +89,14 @@ function _quicksort!(
             )
         end
         for (i, (xs_chunk, _)) in enumerate(chunks)
-            singleton_chunks[i] || continue
+            singleton_chunkid[i] > 0 || continue
+            idx = (
+                below_offsets[i]+1:get(below_offsets, i + 1, equal_offsets[1]),
+                equal_offsets[i]+1:get(equal_offsets, i + 1, above_offsets[1]),
+                above_offsets[i]+1:get(above_offsets, i + 1, length(ys)),
+            )[singleton_chunkid[i]]
             # There is only one partition. Short-circuit scattering.
-            ys_chunk = view(
-                ys,
-                below_offsets[i]+1:(below_offsets[i]+nbelows[i]+nequals[i]+naboves[i]),
-            )
+            ys_chunk = view(ys, idx)
             copyto!(ys_chunk, xs_chunk)
             # Is it better to multi-thread this?
         end
