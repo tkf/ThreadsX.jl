@@ -21,8 +21,6 @@ function Base.sort!(
     return _quicksort!(ys, copy(ys), a, o, Vector{Int8}(undef, length(ys)), true, true)
 end
 
-# _hist = Int[]
-
 function _quicksort!(
     ys,
     xs,
@@ -32,16 +30,9 @@ function _quicksort!(
     ys_eq_xs = false,
     mutable_xs = false,
 )
-    # push!(_hist, length(ys))
-    # @show objectid(parent(ys))
-    # @show length(ys)
-    # if ys isa SubArray
-    #     @show ys.indices
-    # end
     @check length(ys) == length(xs)
     if length(ys) <= alg.smallsize
         ys_eq_xs || copyto!(ys, xs)
-        # return ys
         return sort!(ys, alg.smallsort, order)
     end
     pivot = xs[end÷2]
