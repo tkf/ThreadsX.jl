@@ -99,8 +99,14 @@ end
 _minmax((min0, max0), (min1, max1)) = (min(min0, min1), max(max0, max1))
 
 ThreadsX.extrema(itr; kw...) = ThreadsX.extrema(identity, itr; kw...)
-ThreadsX.extrema(f, itr; kw...) =
-    reduce(asmonoid(_minmax), Map(x -> (y = f(x); (y, y))), itr; simd = Val(true), kw...)
+ThreadsX.extrema(f, itr; kw...) = reduce(
+    asmonoid(_minmax),
+    Map(x -> (y = f(x); (y, y))),
+    itr;
+    simd = Val(true),
+    basesize = default_basesize(ThreadsX.extrema, f, itr),
+    kw...,
+)
 
 struct PushUnique{F} <: Function
     f::F

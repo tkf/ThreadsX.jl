@@ -179,15 +179,19 @@ function ThreadsX.sort!(
     smallsort = Base.Sort.DEFAULT_STABLE,
     smallsize = nothing,
     basesize = nothing,
-    kwargs...,
+    alg::Base.Sort.Algorithm = ParallelMergeSortAlg(
+        smallsort = smallsort,
+        smallsize = smallsize,
+        basesize = basesize,
+    ),
+    lt = isless,
+    by = identity,
+    rev::Union{Bool,Nothing} = nothing,
+    order::Base.Ordering = Base.Forward,
 )
-    return sort!(
-        xs;
-        alg = ParallelMergeSortAlg(
-            smallsort = smallsort,
-            smallsize = smallsize,
-            basesize = basesize,
-        ),
-        kwargs...,
-    )
+    ordr = Base.ord(lt, by, rev, order)
+    if maybe_counting_sort!(xs, ordr)
+        return xs
+    end
+    return sort!(xs, alg, ordr)
 end
