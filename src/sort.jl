@@ -8,9 +8,17 @@ Parallel merge sort algorithm.
 
 # Examples
 ```julia
-sort!(x; alg = ThreadsX.MergeSort)
-ThreadsX.sort!(x; alg = ThreadsX.MergeSort)
+ThreadsX.sort!(x; alg = MergeSort)
 ```
+
+is more or less equivalent to
+
+```julia
+sort!(x; alg = ThreadsX.MergeSort)
+```
+
+although `ThreadsX.sort!` may be faster for very large integer arrays
+as it also parallelize counting sort.
 
 `ThreadsX.MergeSort` is a `Base.Sort.Algorithm`, just like
 `Base.MergeSort`.  It has a few properties for configuring the
@@ -172,27 +180,31 @@ function _mergesort!(xs, alg, order, tmp = nothing)
     return xs
 end
 
+ParallelSortAlgorithm(alg::ParallelSortAlgorithm) = alg
+ParallelSortAlgorithm(::typeof(MergeSort)) = ParallelMergeSortAlg()
+ParallelSortAlgorithm(::typeof(QuickSort)) = ParallelQuickSortAlg()
+
 ThreadsX.sort(xs; kwargs...) = ThreadsX.sort!(Base.copymutable(xs); kwargs...)
 
 function ThreadsX.sort!(
     xs;
-    smallsort = Base.Sort.DEFAULT_STABLE,
+    smallsort = nothing,
     smallsize = nothing,
     basesize = nothing,
-    alg::Base.Sort.Algorithm = ParallelMergeSortAlg(
-        smallsort = smallsort,
-        smallsize = smallsize,
-        basesize = basesize,
-    ),
+    alg::Base.Sort.Algorithm = ParallelMergeSortAlg(),
     lt = isless,
     by = identity,
     rev::Union{Bool,Nothing} = nothing,
     order::Base.Ordering = Base.Forward,
 )
-    if basesize === nothing
+    alg = ParallelSortAlgorithm(alg)
+    if basesize !== nothing
         alg = @set alg.basesize = basesize
     end
-    if smallsize === nothing
+    if smallsort !== nothing
+        alg = @set alg.smallsort = smallsort
+    end
+    if smallsize !== nothing
         alg = @set alg.smallsize = smallsize
     end
     ordr = Base.ord(lt, by, rev, order)
