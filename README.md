@@ -20,8 +20,11 @@ To find out functions supported by ThreadsX.jl, just type
 julia> using ThreadsX
 
 julia> ThreadsX.
-all       count     findall   findlast  mapreduce minimum   reduce    sort!
-any       extrema   findfirst map       maximum   prod      sort      sum
+MergeSort       any             findlast        maximum         sort!
+QuickSort       count           foreach         minimum         sum
+Set             extrema         map             prod            unique
+StableQuickSort findall         map!            reduce
+all             findfirst       mapreduce       sort
 ```
 
 ## API
@@ -48,7 +51,6 @@ implementation detail.
 ## Limitations
 
 * Keyword argument `dims` is not supported yet.
-* Keyword argument `alg` for sort functions is not supported.
 * (There are probably more.)
 
 ## Implementations
