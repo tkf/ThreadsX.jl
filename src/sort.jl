@@ -189,6 +189,12 @@ function ThreadsX.sort!(
     rev::Union{Bool,Nothing} = nothing,
     order::Base.Ordering = Base.Forward,
 )
+    if basesize === nothing
+        alg = @set alg.basesize = basesize
+    end
+    if smallsize === nothing
+        alg = @set alg.smallsize = smallsize
+    end
     ordr = Base.ord(lt, by, rev, order)
     if maybe_counting_sort!(xs, ordr)
         return xs
