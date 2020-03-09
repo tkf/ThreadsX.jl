@@ -2,4 +2,5 @@
 /.benchmarkci
 /benchmark/*.json
 /dev/
+/docs/build
 Manifest.toml
