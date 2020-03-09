@@ -1,5 +1,8 @@
 # ThreadsX.jl
 
-```@autodocs
-Modules = [ThreadsX]
+```@docs
+ThreadsX
+ThreadsX.sort!
+ThreadsX.sort
+ThreadsX.MergeSort
 ```

@@ -64,6 +64,12 @@ else
     @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
 end
 
+# Use README as the docstring of the module:
+@doc let path = joinpath(dirname(@__DIR__), "README.md")
+    include_dependency(path)
+    read(path, String)
+end ThreadsX
+
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
