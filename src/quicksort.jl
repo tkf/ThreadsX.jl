@@ -43,8 +43,7 @@ function _quicksort!(
     # first pass.
 
     # Compute sizes of each partition for each chunks.
-    chunks =
-        zip(Iterators.partition(xs, alg.basesize), Iterators.partition(cs, alg.basesize))
+    chunks = zip(_partition(xs, alg.basesize), _partition(cs, alg.basesize))
     results = maptasks(partition_sizes!(pivot, order), chunks)
     nbelows = map(first, results)
     nequals = map(last, results)
