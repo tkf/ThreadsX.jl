@@ -28,14 +28,11 @@ function ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_base
     # TODO: Switch to `Channel`-based implementation when
     # `length(partition(xs, basesize))` is much larger than
     # `nthreads`?
-    @sync for p in Iterators.partition(xs, basesize)
+    @sync for p in _partition(xs, basesize)
         @spawn foreach(f, p)
     end
     return
 end
-# This is efficient in 1.4 thanks to
-# https://github.com/JuliaLang/julia/pull/33533 but it's sub-optimal
-# in Julia < 1.4.
 
 ThreadsX.foreach(
     f,

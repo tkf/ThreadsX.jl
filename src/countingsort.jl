@@ -61,7 +61,7 @@ function parallel_sort_int_range!(
 )
 
     tasks = Task[]
-    chunks = Iterators.partition(x, cld(length(x), nthreads))
+    chunks = _partition(x, cld(length(x), nthreads))
     @sync for xchunk in chunks
         push!(tasks, @spawn count_ints(xchunk, rangelen, minval))
     end
@@ -78,7 +78,7 @@ function parallel_sort_int_range!(
         acc = @inbounds where[i] += acc
     end
 
-    indices = Iterators.partition(1:rangelen, cld(rangelen, nthreads))
+    indices = _partition(1:rangelen, cld(rangelen, nthreads))
     if rev
         indices = reverse(indices)
     end
