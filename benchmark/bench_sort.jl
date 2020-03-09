@@ -9,8 +9,12 @@ Random.seed!(1234)
 n = 100_000
 datasets = [
     # (label, setup)
-    ("random", shuffle(1:n)),
+    ("I64 (wide)", rand(Int64, n)),
+    ("I64 (narrow)", rand(0:9, n)),
+    ("F64 (wide)", rand(Float64, n)),
+    ("F64 (narrow)", rand(0:0.1:0.9, n)),
     ("sorted", [1:n;]),
+    ("reversed", [reverse(1:n);]),
 ]
 
 suite = BenchmarkGroup()
