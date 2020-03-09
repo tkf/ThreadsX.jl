@@ -53,7 +53,8 @@ using Transducers:
     induction,
     reduced,
     right,
-    tcollect
+    tcollect,
+    tcopy
 using ..ThreadsX
 
 @static if VERSION >= v"1.3-alpha"
