@@ -33,7 +33,7 @@ function sort end
 function sort! end
 
 module Implementations
-using ArgCheck: @argcheck
+using ArgCheck: @argcheck, @check
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
 using ConstructionBase: setproperties
@@ -68,10 +68,15 @@ include("basesizes.jl")
 include("reduce.jl")
 include("map.jl")
 include("sort.jl")
+include("quicksort.jl")
 include("countingsort.jl")
 end  # module Implementations
 
 Implementations.@doc (Implementations.@doc Implementations.ParallelMergeSortAlg) ->
 const MergeSort = Implementations.ParallelMergeSortAlg()
+
+const QuickSort = Implementations.ParallelQuickSortAlg()
+const StableQuickSort =
+    Implementations.ParallelQuickSortAlg(smallsort = MergeSort.smallsort)
 
 end # baremodule ThreadX

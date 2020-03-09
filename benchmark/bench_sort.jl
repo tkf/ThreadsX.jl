@@ -16,10 +16,13 @@ datasets = [
 suite = BenchmarkGroup()
 
 for (label, xs) in datasets
-    suite[label] = BenchmarkGroup()
-    s = suite[label]
-    s["tx"] = @benchmarkable(ThreadsX.sort!(xs), setup = (xs = copy($xs)))
-    s["base"] = @benchmarkable(sort!(xs), setup = (xs = copy($xs)))
+    s = suite[label] = BenchmarkGroup()
+    for algname in [:MergeSort, :QuickSort, :StableQuickSort]
+        alg = getproperty(ThreadsX, algname)
+        s["ThreadsX.$algname"] =
+            @benchmarkable(ThreadsX.sort!(xs; alg = $alg), setup = (xs = copy($xs)))
+    end
+    s["Base"] = @benchmarkable(sort!(xs), setup = (xs = copy($xs)))
 end
 
 end  # module
