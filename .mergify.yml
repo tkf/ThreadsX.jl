@@ -11,6 +11,7 @@ pull_request_rules:
       - status-success~=Test Julia .*
       - -status-failure~=Test Julia [0-9].*
       - status-success=Benchmark
+      - status-success=Documenter
       - label=ready-to-merge:squash
       - label!=work-in-progress
     actions:
@@ -23,6 +24,7 @@ pull_request_rules:
       - status-success~=Test Julia .*
       - -status-failure~=Test Julia [0-9].*
       - status-success=Benchmark
+      - status-success=Documenter
       - label=ready-to-merge:rebase
       - label!=work-in-progress
     actions:
@@ -35,6 +37,7 @@ pull_request_rules:
       - status-success~=Test Julia .*
       - -status-failure~=Test Julia [0-9].*
       - status-success=Benchmark
+      - status-success=Documenter
       - label=ready-to-merge:merge
       - label!=work-in-progress
     actions:
@@ -47,6 +50,7 @@ pull_request_rules:
       - status-success~=Test Julia .*
       - -status-failure~=Test Julia [0-9].*
       - status-success=Benchmark
+      - status-success=Documenter
       - label~=ready-to-merge:.*
     actions:
       review: {}
