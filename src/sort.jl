@@ -38,7 +38,7 @@ The properties can be "set" by calling the algorithm object itself.  A
 new algorithm object with new properties given by the keyword
 arguments is returned:
 
-```jldoctest setup = :(using ThreadsX)
+```jldoctest; setup = :(using ThreadsX)
 julia> alg = ThreadsX.MergeSort(smallsort = QuickSort) :: Base.Sort.Algorithm;
 
 julia> alg.smallsort == QuickSort
