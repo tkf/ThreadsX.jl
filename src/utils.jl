@@ -1,14 +1,16 @@
 default_basesize(n::Integer) = max(1, n ÷ (5 * Threads.nthreads()))
 default_basesize(xs) = default_basesize(length(xs))
 
+function adhoc_partition(xs, n)
+    @check firstindex(xs) == 1
+    m = cld(length(xs), n)
+    return (view(xs, i*n+1:min((i+1)*n, length(xs))) for i in 0:m-1)
+end
+
 if VERSION >= v"1.4"
     const _partition = Iterators.partition
 else
-    function _partition(xs, n)
-        @check firstindex(xs) == 1
-        m = cld(length(xs), n)
-        return (view(xs, i*n+1:min((i+1)*n, length(xs))) for i in 0:m-1)
-    end
+    const _partition = adhoc_partition
 end
 
 function maptasks(f, xs)
