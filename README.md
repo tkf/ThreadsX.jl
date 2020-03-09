@@ -1,5 +1,6 @@
 # Threads⨉: Parallelized `Base` functions
 
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://tkf.github.io/ThreadsX.jl/dev)
 [![GitHub Actions](https://github.com/tkf/ThreadsX.jl/workflows/Run%20tests/badge.svg)](https://github.com/tkf/ThreadsX.jl/actions?query=workflow%3A%22Run+tests%22)
 [![Aqua QA](https://img.shields.io/badge/Aqua.jl-%F0%9F%8C%A2-aqua.svg)](https://github.com/tkf/Aqua.jl)
 
