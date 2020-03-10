@@ -1,5 +1,17 @@
 default_basesize(_, _, xs) = default_basesize(xs::AbstractArray)
 
+# TODO: handle `Base.Fix2` etc.
+# TODO: tune this; it's just copied from `findfirst`
+default_basesize(::typeof(ThreadsX.any), _, xs) = 2^14
+
+default_basesize(::typeof(ThreadsX.all), f, xs) =
+    default_basesize(ThreadsX.any, f, xs)
+
+default_basesize(::typeof(ThreadsX.findfirst), _, xs) = 2^14
+
+default_basesize(::typeof(ThreadsX.findlast), f, xs) =
+    default_basesize(ThreadsX.findfirst, f, xs)
+
 # `@btime wait(Threads.@spawn nothing)` shows ~1 μs overhead of
 # spawning a task.  So let's choose the basesize such that basecase
 # takes much longer time than this (say 20 μs).
@@ -7,12 +19,12 @@ default_basesize(_, _, xs) = default_basesize(xs::AbstractArray)
 function default_basesize(
     ::typeof(ThreadsX.extrema),
     ::typeof(identity),
-    ::AbstractArray{T},
+    xs::AbstractArray{T},
 ) where {T<:Integer}
     if isconcretetype(T)
         return 2^20 ÷ sizeof(T)
     end
-    return default_basesize()
+    return default_basesize(xs)
 end
 
 default_basesize(
