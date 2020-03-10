@@ -2,12 +2,12 @@ default_basesize(_, _, xs) = default_basesize(xs::AbstractArray)
 
 # TODO: handle `Base.Fix2` etc.
 # TODO: tune this; it's just copied from `findfirst`
-default_basesize(::typeof(ThreadsX.any), _, xs) = 2^14
+default_basesize(::typeof(ThreadsX.any), _, xs) = 2^15
 
 default_basesize(::typeof(ThreadsX.all), f, xs) =
     default_basesize(ThreadsX.any, f, xs)
 
-default_basesize(::typeof(ThreadsX.findfirst), _, xs) = 2^14
+default_basesize(::typeof(ThreadsX.findfirst), _, xs) = 2^15
 
 default_basesize(::typeof(ThreadsX.findlast), f, xs) =
     default_basesize(ThreadsX.findfirst, f, xs)
