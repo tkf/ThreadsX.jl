@@ -79,7 +79,7 @@ function ThreadsX.findlast(f, array::AbstractArray; kw...)
     idx = keys(array)
     return reduce(
         right,
-        Map(i -> idx[i]) |> ReduceIf(i -> f(@inbounds array[i])),
+        Map(i -> (@inbounds idx[i])) |> ReduceIf(i -> f(@inbounds array[i])),
         lastindex(idx):-1:firstindex(idx);
         init = nothing,
         simd = Val(true),
