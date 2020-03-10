@@ -6,7 +6,7 @@ using ThreadsX
 
 Random.seed!(1234)
 
-n = 2^18
+n = 2^20
 
 suite = BenchmarkGroup()
 
