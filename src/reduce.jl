@@ -46,6 +46,7 @@ ThreadsX.any(f, itr; kw...) = reduce(
     right,  # no need to use `|`
     Map(asbool(f)) |> ReduceIf(identity),
     simd = Val(true),
+    basesize = default_basesize(ThreadsX.any, f, itr),
     itr;
     kw...,
     init = false,
@@ -57,6 +58,7 @@ ThreadsX.all(f, itr; kw...) = reduce(
     Map(asbool(f)) |> ReduceIf(!),
     itr;
     simd = Val(true),
+    basesize = default_basesize(ThreadsX.all, f, itr),
     kw...,
     init = true,
 )
@@ -68,6 +70,7 @@ ThreadsX.findfirst(f, array::AbstractArray; kw...) = reduce(
     keys(array);
     init = nothing,
     simd = Val(true),
+    basesize = default_basesize(ThreadsX.findfirst, f, array),
     kw...,
 )
 
@@ -80,6 +83,7 @@ function ThreadsX.findlast(f, array::AbstractArray; kw...)
         lastindex(idx):-1:firstindex(idx);
         init = nothing,
         simd = Val(true),
+        basesize = default_basesize(ThreadsX.findlast, f, array),
         kw...,
     )
 end
