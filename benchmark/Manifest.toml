@@ -28,9 +28,9 @@ version = "0.5.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "c437ba8bb82f5ec9a5d8cb881031ffa2dbe1038c"
+git-tree-sha1 = "2e23d71ad695ec28ca58ddd44869f07afa33cc76"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.6.0"
+version = "3.7.0"
 
 [[ConstructionBase]]
 git-tree-sha1 = "a2a6a5fea4d6f730ec4c18a76d27ec10e8ec1c50"
@@ -235,7 +235,7 @@ version = "0.1.0"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "9441d308d4cbb582e38c713e668459f36523b665"
+git-tree-sha1 = "5ccdad77f556c4212ffebaea814585c7bc1d5a39"
 repo-rev = "master"
 repo-url = "https://github.com/tkf/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
