@@ -23,7 +23,10 @@ function ThreadsX.map(
     return reshape(output, dims)
 end
 
-function ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_basesize(xs))
+ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_basesize(xs)) =
+    foreach_array(f, xs, IndexStyle(xs), basesize)
+
+function foreach_array(f, ::IndexLinear, xs, basesize)
     @argcheck basesize >= 1
     # TODO: Switch to `Channel`-based implementation when
     # `length(partition(xs, basesize))` is much larger than
@@ -31,6 +34,41 @@ function ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_base
     @sync for p in _partition(xs, basesize)
         @spawn foreach(f, p)
     end
+    return
+end
+
+function foreach_array(f, style::IndexCartesian, xs, basesize)
+    @argcheck basesize >= 1
+    if length(xs) == 0
+        return
+    elseif length(xs) <= basesize
+        foreach_cartesian_seq(f, xs)
+        return
+    end
+    left, right = halve(xs)
+    @sync begin
+        @spawn foreach_array(f, style, right, basesize)
+        foreach_array(f, style, left, basesize)
+    end
+    return
+end
+
+@inline function foreach_cartesian_seq(
+    f::F,
+    xs::AbstractArray{<:Any,N},
+    idx::CartesianIndex{M} = CartesianIndex(),
+) where {F,N,M}
+    for i in axes(xs, N - M)
+        foreach_cartesian_seq(f, xs, CartesianIndex(i, idx))
+    end
+end
+
+@inline function foreach_cartesian_seq(
+    f,
+    xs::AbstractArray{<:Any,N},
+    idx::CartesianIndex{N},
+) where {N}
+    f(@inbounds xs[idx])
     return
 end
 
