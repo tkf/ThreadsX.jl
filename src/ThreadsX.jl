@@ -74,7 +74,7 @@ include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
 include("map.jl")
-include("sort.jl")
+include("mergesort.jl")
 include("quicksort.jl")
 include("countingsort.jl")
 end  # module Implementations
