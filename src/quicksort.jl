@@ -18,7 +18,15 @@ function Base.sort!(
         a = @set a.smallsize = a.basesize
     end
     ys = view(v, lo:hi)
-    return _quicksort!(ys, copy(ys), a, o, Vector{Int8}(undef, length(ys)), true, true)
+    return _quicksort!(
+        similar(ys),
+        ys,
+        a,
+        o,
+        Vector{Int8}(undef, length(ys)),
+        false,  # ys_is_result
+        true,   # mutable_xs
+    )
 end
 
 function _quicksort!(
@@ -27,13 +35,12 @@ function _quicksort!(
     alg,
     order,
     cs = Vector{Int8}(undef, length(ys)),
-    ys_eq_xs = false,
+    ys_is_result = true,
     mutable_xs = false,
 )
     @check length(ys) == length(xs)
     if length(ys) <= alg.smallsize
-        ys_eq_xs || copyto!(ys, xs)
-        return sort!(ys, alg.smallsort, order)
+        return sort!(ys_is_result ? ys : xs, alg.smallsort, order)
     end
     pivot = xs[end÷2]
 
@@ -101,20 +108,30 @@ function _quicksort!(
             cs_new = view(cs, idx)
             @spawn begin
                 if mutable_xs
-                    copyto!(xs_new, ys_new)
+                    zs = xs_new
                 else
-                    xs_new = copy(ys_new)
+                    zs = similar(ys_new)
                 end
-                _quicksort!(ys_new, xs_new, alg, order, cs_new, true, true)
+                _quicksort!(zs, ys_new, alg, order, cs_new, !ys_is_result, true)
             end
         end
         for idx in partitions
             length(idx) <= alg.smallsize || continue
-            sort!(view(ys, idx), alg.smallsort, order)
+            if ys_is_result
+                ys_new = view(ys, idx)
+            else
+                ys_new = copyto!(view(xs, idx), view(ys, idx))
+            end
+            sort!(ys_new, alg.smallsort, order)
+        end
+        if !ys_is_result
+            let idx = equal_offsets[1]+1:above_offsets[1]
+                copyto!(view(xs, idx), view(ys, idx))
+            end
         end
     end
 
-    return ys
+    return ys_is_result ? ys : xs
 end
 
 partition_sizes!(pivot, order) = ((xs, cs),) -> partition_sizes!(xs, cs, pivot, order)
