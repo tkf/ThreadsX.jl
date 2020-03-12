@@ -175,12 +175,3 @@ function unsafe_quicksort_scatter!(
     end
     return
 end
-
-quicksort(
-    xs;
-    lt = isless,
-    by = identity,
-    rev::Bool = false,
-    order = Base.Forward,
-    basesize::Integer = default_basesize(xs),
-) = _quicksort!(similar(xs), xs, Base.ord(lt, by, rev, order), basesize)
