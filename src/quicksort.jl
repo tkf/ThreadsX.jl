@@ -110,7 +110,7 @@ function _quicksort!(
         end
         for idx in partitions
             length(idx) <= alg.smallsize || continue
-            sort!(view(ys, idx); alg = QuickSort, order = order)
+            sort!(view(ys, idx), alg.smallsort, order)
         end
     end
 
