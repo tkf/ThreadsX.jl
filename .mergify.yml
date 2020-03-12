@@ -54,8 +54,3 @@ pull_request_rules:
       - label~=ready-to-merge:.*
     actions:
       review: {}
-  - name: delete head branch after merge
-    conditions:
-      - merged
-    actions:
-      delete_head_branch: {}
