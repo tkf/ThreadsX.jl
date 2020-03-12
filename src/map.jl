@@ -24,7 +24,7 @@ function ThreadsX.map(
 end
 
 ThreadsX.foreach(f, xs::AbstractArray; basesize::Integer = default_basesize(xs)) =
-    foreach_array(f, xs, IndexStyle(xs), basesize)
+    foreach_array(f, IndexStyle(xs), xs, basesize)
 
 function foreach_array(f, ::IndexLinear, xs, basesize)
     @argcheck basesize >= 1
