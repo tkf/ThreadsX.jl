@@ -16,7 +16,7 @@ for percent in [0, 10, 20, 30, 40, 50]
     xs[max(1, floor(Int, length(xs) * percent / 100))] = -1
     s = suite["$(percent)%"] = BenchmarkGroup()
     s["tx"] = @benchmarkable(ThreadsX.findfirst(==(-1), $xs))
-    s["tx-noterm"] = @benchmarkable(ThreadsX.findfirst(==(-1), $xs, terminatable = false))
+    s["tx-noterm"] = @benchmarkable(ThreadsX.findfirst(==(-1), $xs, stoppable = false))
     s["tx-seq"] = @benchmarkable(ThreadsX.findfirst(==(-1), $xs, basesize = typemax(Int)))
     s["base"] = @benchmarkable(findfirst(==(-1), $xs))
 end
