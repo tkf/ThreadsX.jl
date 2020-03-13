@@ -18,7 +18,7 @@ function Base.sort!(
         a = @set a.smallsize = a.basesize
     end
     ys = view(v, lo:hi)
-    return _quicksort!(
+    _quicksort!(
         similar(ys),
         ys,
         a,
@@ -27,6 +27,7 @@ function Base.sort!(
         false,  # ys_is_result
         true,   # mutable_xs
     )
+    return v
 end
 
 function _quicksort!(
