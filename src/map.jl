@@ -41,7 +41,7 @@ ThreadsX.foreach(
     kw...,
 ) where {N} =
     ThreadsX.foreach(eachindex(array, arrays...); kw...) do i
-        @inbounds f(array[i], map(x -> x[i], arrays)...)
+        f((@inbounds array[i]), map(x -> (@inbounds x[i]), arrays)...)
     end
 
 #=
