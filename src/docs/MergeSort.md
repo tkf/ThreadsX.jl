@@ -2,15 +2,9 @@
 
 Parallel merge sort algorithm.
 
+See also [`ThreadsX.QuickSort`](@ref).
+
 # Examples
-    ThreadsX.sort!(x; alg = MergeSort)
-
-is more or less equivalent to
-
-    sort!(x; alg = ThreadsX.MergeSort)
-
-although `ThreadsX.sort!` may be faster for very large integer arrays
-as it also parallelize counting sort.
 
 `ThreadsX.MergeSort` is a `Base.Sort.Algorithm`, just like
 `Base.MergeSort`.  It has a few properties for configuring the
