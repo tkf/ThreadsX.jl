@@ -9,15 +9,15 @@
 Add prefix `ThreadsX.` to functions from `Base` to get some speedup,
 if supported.  Example:
 
-```julia
+``````julia
 using ThreadsX
 ThreadsX.sum(sin, 1:10_000)
-```
+``````
 
 To find out functions supported by ThreadsX.jl, just type
 `ThreadsX.` + <kbd>TAB</kbd> in the REPL:
 
-```julia
+``````julia
 julia> using ThreadsX
 
 julia> ThreadsX.
@@ -26,7 +26,7 @@ QuickSort       count           foreach         minimum         sum
 Set             extrema         map             prod            unique
 StableQuickSort findall         map!            reduce
 all             findfirst       mapreduce       sort
-```
+``````
 
 ## API
 
