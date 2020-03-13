@@ -33,6 +33,7 @@ function sort end
 function sort! end
 
 module Implementations
+import SplittablesBase
 using ArgCheck: @argcheck, @check
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
@@ -64,12 +65,6 @@ else
     @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
 end
 
-# Use README as the docstring of the module:
-@doc let path = joinpath(dirname(@__DIR__), "README.md")
-    include_dependency(path)
-    read(path, String)
-end ThreadsX
-
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
@@ -79,11 +74,11 @@ include("quicksort.jl")
 include("countingsort.jl")
 end  # module Implementations
 
-Implementations.@doc (Implementations.@doc Implementations.ParallelMergeSortAlg) ->
 const MergeSort = Implementations.ParallelMergeSortAlg()
-
 const QuickSort = Implementations.ParallelQuickSortAlg()
 const StableQuickSort =
     Implementations.ParallelQuickSortAlg(smallsort = MergeSort.smallsort)
+
+Implementations.define_docstrings()
 
 end # baremodule ThreadX

@@ -1,65 +1,6 @@
 abstract type ParallelSortAlgorithm <: Base.Sort.Algorithm end
 (alg::ParallelSortAlgorithm)(; kw...) = setproperties(alg; kw...)
 
-"""
-    ThreadsX.MergeSort
-
-Parallel merge sort algorithm.
-
-# Examples
-```julia
-ThreadsX.sort!(x; alg = MergeSort)
-```
-
-is more or less equivalent to
-
-```julia
-sort!(x; alg = ThreadsX.MergeSort)
-```
-
-although `ThreadsX.sort!` may be faster for very large integer arrays
-as it also parallelize counting sort.
-
-`ThreadsX.MergeSort` is a `Base.Sort.Algorithm`, just like
-`Base.MergeSort`.  It has a few properties for configuring the
-algorithm.
-
-```jldoctest
-julia> using ThreadsX
-
-julia> ThreadsX.MergeSort isa Base.Sort.Algorithm
-true
-
-julia> ThreadsX.MergeSort.smallsort === Base.Sort.DEFAULT_STABLE
-true
-```
-
-The properties can be "set" by calling the algorithm object itself.  A
-new algorithm object with new properties given by the keyword
-arguments is returned:
-
-```jldoctest; setup = :(using ThreadsX)
-julia> alg = ThreadsX.MergeSort(smallsort = QuickSort) :: Base.Sort.Algorithm;
-
-julia> alg.smallsort == QuickSort
-true
-
-julia> alg2 = alg(basesize = 64, smallsort = InsertionSort);
-
-julia> alg2.basesize
-64
-
-julia> alg2.smallsort === InsertionSort
-true
-```
-
-# Properties
-- `smallsort :: Base.Sort.Algorithm`: Default to `Base.Sort.DEFAULT_STABLE`.
-- `smallsize :: Union{Nothing,Integer}`: Size of array under which `smallsort`
-  algorithm is used.  `nothing` (default) means to use `basesize`.
-- `basesize :: Union{Nothing,Integer}`.  Base case size of parallel merge.
-  `nothing` (default) means to choose the default size.
-"""
 Base.@kwdef struct ParallelMergeSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortAlgorithm
     smallsort::Alg = Base.Sort.DEFAULT_STABLE
     smallsize::SmallSize = nothing  # lazily determined
@@ -79,7 +20,8 @@ function Base.sort!(
     if a.smallsize === nothing
         a = @set a.smallsize = a.basesize
     end
-    return _mergesort!(view(v, lo:hi), a, o)
+    _mergesort!(view(v, lo:hi), a, o)
+    return v
 end
 
 function mergesorted!(dest, left, right, order, basesize)
@@ -191,21 +133,6 @@ See also [`ThreadsX.sort!`](@ref).
 """
 ThreadsX.sort(xs; kwargs...) = ThreadsX.sort!(Base.copymutable(xs); kwargs...)
 
-"""
-    ThreadsX.sort!(xs; [smallsort, smallsize, basesize, alg, lt, by, rev, order])
-
-# Keyword Arguments
-- `alg :: Base.Sort.Algorithm`: `ThreadsX.MergeSort`, `ThreadsX.QuickSort`,
-  `ThreadsX.StableQuickSort` etc. `Base.MergeSort` and `Base.QuickSort` can
-  be used as aliases of `ThreadsX.MergeSort` and `ThreadsX.QuickSort`.
-- `smallsort :: Union{Nothing,Base.Sort.Algorithm}`:  The algorithm to use
-  for sorting small chunk of the input array.
-- `smallsize :: Union{Nothing,Integer}`: Size of array under which `smallsort`
-  algorithm is used.  `nothing` (default) means to use `basesize`.
-- `basesize :: Union{Nothing,Integer}`.  Granularity of parallelization.
-  `nothing` (default) means to choose the default size.
-- Other keyword arguments are passed to `Base.sort!`.
-"""
 function ThreadsX.sort!(
     xs;
     smallsort = nothing,

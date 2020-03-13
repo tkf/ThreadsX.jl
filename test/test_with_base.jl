@@ -146,4 +146,13 @@ end
     end
 end
 
+@testset "map!(+, dest, matrix, matrix')" begin
+    test_all_implementations(:map!) do map!
+        matrix = reshape(1:9, 3, 3)
+        dest = zero(matrix)
+        map!(+, dest, matrix, matrix')
+        @test dest == matrix .+ matrix'
+    end
+end
+
 end  # module

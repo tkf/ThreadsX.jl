@@ -2,5 +2,7 @@
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 PkgBenchmark = "32113eaa-f34f-5b0d-bd6c-c81e245fc73d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
+SplittablesBase = "171d559e-b47b-412a-8079-5efa626c420e"
 ThreadsX = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
