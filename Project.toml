@@ -16,6 +16,7 @@ Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 [compat]
 ArgCheck = "1.0, 2.0"
 BangBang = "0.3.17"
+SplittablesBase = "0.1"
 Transducers = "0.4.22"
 julia = "1"
 
