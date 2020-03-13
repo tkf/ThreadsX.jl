@@ -20,7 +20,8 @@ function Base.sort!(
     if a.smallsize === nothing
         a = @set a.smallsize = a.basesize
     end
-    return _mergesort!(view(v, lo:hi), a, o)
+    _mergesort!(view(v, lo:hi), a, o)
+    return v
 end
 
 function mergesorted!(dest, left, right, order, basesize)
