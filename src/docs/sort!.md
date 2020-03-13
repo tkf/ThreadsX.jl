@@ -39,9 +39,9 @@ julia> sort!([9, 5, 2, 0, 1]; alg = ThreadsX.MergeSort)
 ```
 
 This entry point may be slower than `ThreadsX.sort!` if the input is a
-very array of integers with small range.  In this case, `ThreadsX.sort!`
-uses parallel counting sort whereas `sort!` uses sequential counting
-sort.
+very large array of integers with small range.  In this case,
+`ThreadsX.sort!` uses parallel counting sort whereas `sort!` uses
+sequential counting sort.
 
 # Keyword Arguments
 - `alg :: Base.Sort.Algorithm`: `ThreadsX.MergeSort`, `ThreadsX.QuickSort`,
