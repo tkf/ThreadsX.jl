@@ -33,6 +33,7 @@ function sort end
 function sort! end
 
 module Implementations
+import SplittablesBase
 using ArgCheck: @argcheck, @check
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty

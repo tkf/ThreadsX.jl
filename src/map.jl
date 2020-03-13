@@ -45,7 +45,7 @@ function foreach_array(f, style::IndexCartesian, xs, basesize)
         foreach_cartesian_seq(f, xs)
         return
     end
-    left, right = halve(xs)
+    left, right = SplittablesBase.halve(xs)
     @sync begin
         @spawn foreach_array(f, style, right, basesize)
         foreach_array(f, style, left, basesize)
