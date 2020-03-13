@@ -24,6 +24,30 @@ end
     end
 end
 
+@testset "inplace" begin
+    @testset "default" begin
+        xs = [1:10;]
+        @test ThreadsX.sort!(xs) === xs
+        @test issorted(xs)
+    end
+    @testset for alg in [
+        ThreadsX.MergeSort,
+        ThreadsX.QuickSort,
+        ThreadsX.StableQuickSort,
+        MergeSort,
+        QuickSort,
+    ]
+        xs = [1:10;]
+        @test ThreadsX.sort!(xs; alg = alg) === xs
+        @test issorted(xs)
+    end
+    @testset for alg in [ThreadsX.MergeSort, ThreadsX.QuickSort, ThreadsX.StableQuickSort]
+        xs = [1:10;]
+        @test sort!(xs; alg = alg) === xs
+        @test issorted(xs)
+    end
+end
+
 @testset "UI" begin
     @test ThreadsX.sort(1:10; alg = MergeSort) == 1:10
     @test ThreadsX.sort(1:10; alg = QuickSort) == 1:10
