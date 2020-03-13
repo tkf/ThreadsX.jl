@@ -65,12 +65,6 @@ else
     @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
 end
 
-# Use README as the docstring of the module:
-@doc let path = joinpath(dirname(@__DIR__), "README.md")
-    include_dependency(path)
-    read(path, String)
-end ThreadsX
-
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
@@ -80,11 +74,11 @@ include("quicksort.jl")
 include("countingsort.jl")
 end  # module Implementations
 
-Implementations.@doc (Implementations.@doc Implementations.ParallelMergeSortAlg) ->
 const MergeSort = Implementations.ParallelMergeSortAlg()
-
 const QuickSort = Implementations.ParallelQuickSortAlg()
 const StableQuickSort =
     Implementations.ParallelQuickSortAlg(smallsort = MergeSort.smallsort)
+
+Implementations.define_docstrings()
 
 end # baremodule ThreadX
