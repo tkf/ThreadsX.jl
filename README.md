@@ -56,5 +56,9 @@ implementation detail.
 
 ## Implementations
 
-Most of `reduce`-based functions are implemented as a thin wrapper of
+Most of `reduce`-based functions are implemented as thin wrappers of
 [`Transducers.jl`](https://github.com/tkf/Transducers.jl).
+
+Custom collections can support ThreadsX.jl API by implementing
+[`SplittablesBase.jl`](https://github.com/tkf/SplittablesBase.jl)
+interface.

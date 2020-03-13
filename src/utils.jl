@@ -68,7 +68,9 @@ function define_docstrings()
     end
     for (name, path) in docstrings
         include_dependency(path)
-        doc = replace(read(path, String), r"^```julia"m => "```jldoctest $name")
+        doc = read(path, String)
+        doc = replace(doc, r"^```julia"m => "```jldoctest $name")
+        doc = replace(doc, "<kbd>TAB</kbd>" => "_TAB_")
         @eval ThreadsX $Base.@doc $doc $name
     end
 end
