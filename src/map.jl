@@ -53,6 +53,9 @@ function foreach_array(f, style::IndexCartesian, xs, basesize)
     return
 end
 
+# Until https://github.com/JuliaLang/julia/pull/35036 is merged and
+# released, implement special `foreach` here.
+# TODO: Upstream this to Transducers.jl?
 @inline function foreach_cartesian_seq(
     f::F,
     xs::AbstractArray{<:Any,N},
