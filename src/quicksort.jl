@@ -40,10 +40,23 @@ function _quicksort!(
     mutable_xs = false,
 )
     @check length(ys) == length(xs)
-    if length(ys) <= alg.smallsize
+    if length(ys) <= max(8, alg.smallsize)
         return sort!(ys_is_result ? ys : xs, alg.smallsort, order)
     end
-    pivot = xs[end÷2]
+    pivot = _median(
+        order,
+        (
+            xs[1],
+            xs[end÷8],
+            xs[end÷4],
+            xs[3*(end÷8)],
+            xs[end÷2],
+            xs[5*(end÷8)],
+            xs[3*(end÷4)],
+            xs[7*(end÷8)],
+            xs[end],
+        ),
+    )
 
     # TODO: Calculate extrema during the first pass if it's possible
     # to use counting sort.
