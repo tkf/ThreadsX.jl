@@ -48,6 +48,35 @@ end
     end
 end
 
+randnans(n) = reinterpret(Float64, [rand(UInt64) | 0x7ff8000000000000 for i in 1:n])
+
+function randn_with_nans(n, p)
+    v = randn(n)
+    x = findall(rand(n) .< p)
+    v[x] = randnans(length(x))
+    return v
+end
+
+# Taken from "advanced sorting" testset.  This was the only test that
+# failed when `fpsort!` was replaced with plain `sort!`.
+@testset "NaN" begin
+    @testset for n in [0:10; 100; 101; 1000; 1001]
+        v = randn_with_nans(n, 0.1)
+        @testset for alg in [
+                ThreadsX.MergeSort,
+                ThreadsX.QuickSort,
+                ThreadsX.StableQuickSort,
+            ],
+            rev in [false, true],
+            basesize in 1:8
+            # test float sorting with NaNs
+            s = ThreadsX.sort(v, alg = alg, rev = rev, basesize = basesize)
+            @test issorted(s, rev = rev)
+            @test reinterpret(UInt64, v[isnan.(v)]) == reinterpret(UInt64, s[isnan.(s)])
+        end
+    end
+end
+
 @testset "UI" begin
     @test ThreadsX.sort(1:10; alg = MergeSort) == 1:10
     @test ThreadsX.sort(1:10; alg = QuickSort) == 1:10
