@@ -1,8 +1,9 @@
 Base.@kwdef struct ParallelQuickSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortAlgorithm
     smallsort::Alg = Base.Sort.DEFAULT_UNSTABLE
     smallsize::SmallSize = nothing  # lazily determined
-    basesize::BaseSize = nothing  # lazily determined
+    basesize::BaseSize = 10_000
 end
+# `basesize` is tuned using `Float64`.  Make it `eltype`-aware?
 
 function Base.sort!(
     v::AbstractVector,
