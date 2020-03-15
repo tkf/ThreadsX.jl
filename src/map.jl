@@ -82,6 +82,7 @@ ThreadsX.foreach(
     kw...,
 ) where {N} =
     ThreadsX.foreach(eachindex(array, arrays...); kw...) do i
+        Base.@_inline_meta
         f((@inbounds array[i]), map(x -> (@inbounds x[i]), arrays)...)
     end
 
@@ -92,6 +93,7 @@ ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
 
 function ThreadsX.map!(f, dest, array, arrays...; kw...)
     ThreadsX.foreach(referenceable(dest), array, arrays...; kw...) do y, xs...
+        Base.@_inline_meta
         y[] = f(xs...)
     end
     return dest
