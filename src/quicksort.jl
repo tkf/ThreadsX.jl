@@ -127,7 +127,7 @@ function _quicksort!(
             ys_new = view(ys, idx)
             xs_new = view(xs, idx)
             cs_new = view(cs, idx)
-            @spawn begin
+            @spawn let zs
                 if mutable_xs
                     zs = xs_new
                 else
