@@ -130,7 +130,7 @@ function _quicksort!(
             xs_new = view(xs, idx)
             cs_new = view(cs, idx)
             next_task = let task = next_task
-            @task begin
+            @task let zs
                 if mutable_xs
                     zs = xs_new
                 else
