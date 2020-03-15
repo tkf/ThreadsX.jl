@@ -41,7 +41,12 @@ function _quicksort!(
 )
     @check length(ys) == length(xs)
     if length(ys) <= max(8, alg.smallsize)
-        return sort!(ys_is_result ? ys : xs, alg.smallsort, order)
+        if ys_is_result
+            zs = copyto!(ys, xs)
+        else
+            zs = xs
+        end
+        return sort!(zs, alg.smallsort, order)
     end
     pivot = _median(
         order,
