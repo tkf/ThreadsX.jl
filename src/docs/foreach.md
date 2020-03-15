@@ -1,15 +1,21 @@
-    ThreadsX.foreach(f, arrays...; basesize)
+    ThreadsX.foreach(f, collections...; basesize)
 
 A parallel version of
 
 ``````julia
-for args in zip(arrays...)
+for args in zip(collections...)
     f(args...)
 end
 ``````
 
 `ThreadsX.foreach` uses linear and Cartesian indexing of `arrays`
 appropriately.  However, it is likely very slow for sparse arrays.
+
+Although `ThreadsX.foreach` can be nested, it is highly recommended to
+use `CartesianIndices` or `Iterators.product` whenever applicable so
+that `ThreadsX.foreach` can load-balance across multiple levels of
+loops.  Otherwise (when nesting `ThreadsX.foreach`) it is important to
+set `basesize` for inner loops to small values (e.g., `basesize = 1`).
 
 # Examples
 
@@ -62,4 +68,26 @@ Above code _fuses_ the computation of `sums .= A .+ A'` and
 julia> ThreadsX.foreach(referenceable(A)) do x
            x[] *= 2
        end
+```
+
+Nested loops can be written using `CartesianIndices`:
+
+```julia
+julia> A = 1:3
+       B = 1:2
+       C = zeros(3, 2);
+
+julia> ThreadsX.foreach(CartesianIndices(C)) do I
+           @inbounds C[I] = A[I[1]] * B[I[2]]
+       end
+       @assert C == A .* reshape(B, 1, :)
+```
+
+Or, alternatively, using `Iterators.product`:
+
+```julia
+julia> ThreadsX.foreach(Iterators.product(eachindex(A), eachindex(B))) do (i, j)
+           @inbounds C[i, j] = A[i] * B[j]
+       end
+       @assert C == A .* reshape(B, 1, :)
 ```
