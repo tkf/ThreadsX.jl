@@ -1,13 +1,21 @@
 without_basesize(; basesize = nothing, kw...) = kw
 
 function ThreadsX.reduce(op, itr; kw...)
-    result = reduce(op, Map(identity), itr; init = Init(op), kw...)
+    result = reduce(
+        op,
+        Map(identity),
+        itr;
+        init = Init(op),
+        basesize = default_basesize(itr),
+        kw...,
+    )
     result === Init(op) && return reduce_empty(op, eltype(itr))
     return result
 end
 
 function ThreadsX.mapreduce(f, op, itr; kw...)
-    result = reduce(op, Map(f), itr; init = Init(op), kw...)
+    result =
+        reduce(op, Map(f), itr; init = Init(op), basesize = default_basesize(itr), kw...)
     result === Init(op) && return mapreduce_empty(f, op, eltype(itr))
     return result
 end
@@ -17,7 +25,13 @@ function ThreadsX.mapreduce(f, op, itr, itrs...; kw...)
         # `Base` just does `reduce(op, map(f, ...))`:
         return mapreduce(f, op, itr, itrs...; without_basesize(; kw...)...)
     end
-    return reduce(op, MapSplat(f), zip(itr, itrs...); kw...)
+    return reduce(
+        op,
+        MapSplat(f),
+        zip(itr, itrs...);
+        basesize = default_basesize(itr),
+        kw...,
+    )
 end
 
 # Maybe refactor the function based on mapreduce into AbstractReducers.jl?
@@ -147,7 +161,14 @@ function ThreadsX.unique(f::F, itr::AbstractVector{X}; kw...) where {F,X}
     # Using inference as an optimization. The result of this inference
     # does not affect the result:
     Y = Core.Compiler.return_type(f, Tuple{X})
-    ys, = reduce(PushUnique(f), Map(identity), itr; kw..., init = OnInit(InitUnique{X,Y}()))
+    ys, = reduce(
+        PushUnique(f),
+        Map(identity),
+        itr;
+        basesize = default_basesize(itr),
+        kw...,
+        init = OnInit(InitUnique{X,Y}()),
+    )
     return ys::Vector{X}
 end
 
