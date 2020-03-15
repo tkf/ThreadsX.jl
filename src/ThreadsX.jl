@@ -68,6 +68,7 @@ end
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
+include("foreach.jl")
 include("map.jl")
 include("mergesort.jl")
 include("quicksort.jl")
