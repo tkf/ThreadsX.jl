@@ -127,6 +127,28 @@ end
     end
 end
 
+@testset "foreach(..., product(1:2, 1:3))" begin
+    test_all_implementations(:foreach) do foreach
+        xs = Iterators.product(1:2, 1:3)
+        ys = ones(2, 3)
+        foreach(xs) do I
+            ys[I...] = prod(I)
+        end
+        @test ys == prod.(xs)
+    end
+end
+
+@testset "foreach(..., product(1:2, 1:3, 1:4))" begin
+    test_all_implementations(:foreach) do foreach
+        xs = Iterators.product(1:2, 1:3, 1:4)
+        ys = ones(2, 3, 4)
+        foreach(xs) do I
+            ys[I...] = prod(I)
+        end
+        @test ys == prod.(xs)
+    end
+end
+
 @testset "map!(x -> x^2, ys, xs)" begin
     test_all_implementations(:map!) do map!
         xs = 11:15

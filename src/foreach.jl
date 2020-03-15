@@ -65,3 +65,23 @@ ThreadsX.foreach(
 ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
     ThreadsX.foreach(f, map(vec, tuple(array, arrays...))...; kw...)
 =#
+
+@inline return_nothing(_...) = nothing
+
+ThreadsX.foreach(f::F, itr; kw...) where {F} = reduce(
+    return_nothing,
+    Map(f),
+    itr;
+    init = nothing,
+    basesize = default_basesize(itr),
+    kw...,
+)
+
+ThreadsX.foreach(f::F, itr, itrs...; kw...) where {F} = reduce(
+    return_nothing,
+    MapSplat(f),
+    zip(itr, itrs...);
+    init = nothing,
+    basesize = default_basesize(itr),
+    kw...,
+)
