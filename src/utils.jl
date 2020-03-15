@@ -32,6 +32,18 @@ _median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
     (_median(order, (a, b, c)), _median(order, (d, e, f)), _median(order, (g, h, i))),
 )
 
+@static if VERSION >= v"1.3-alpha"
+    function nonsticky!(task)
+        task.sticky = false
+        return task
+    end
+else
+    nonsticky!(task) = task
+end
+
+struct DummyTask end
+Base.schedule(::DummyTask) = nothing
+
 function maptasks(f, xs)
     tasks = Task[]
     @sync for x in xs

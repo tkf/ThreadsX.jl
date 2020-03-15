@@ -39,9 +39,11 @@ function _quicksort!(
     cs = Vector{Int8}(undef, length(ys)),
     ys_is_result = true,
     mutable_xs = false,
+    next_task = DummyTask(),
 )
     @check length(ys) == length(xs)
     if length(ys) <= max(8, alg.smallsize)
+        schedule(next_task)
         if ys_is_result
             zs = copyto!(ys, xs)
         else
@@ -127,15 +129,19 @@ function _quicksort!(
             ys_new = view(ys, idx)
             xs_new = view(xs, idx)
             cs_new = view(cs, idx)
-            @spawn begin
+            next_task = let task = next_task
+            @task begin
                 if mutable_xs
                     zs = xs_new
                 else
                     zs = similar(ys_new)
                 end
-                _quicksort!(zs, ys_new, alg, order, cs_new, !ys_is_result, true)
-            end
+                _quicksort!(zs, ys_new, alg, order, cs_new, !ys_is_result, true, task)
+            end end
+            nonsticky!(next_task)
+            Base.@sync_add next_task
         end
+        schedule(next_task)
         for idx in partitions
             length(idx) <= alg.smallsize || continue
             if ys_is_result
