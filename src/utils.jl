@@ -13,6 +13,25 @@ else
     const _partition = adhoc_partition
 end
 
+function _median(order, (a, b, c)::NTuple{3,Any})
+    # Sort `(a, b, c)`:
+    if Base.lt(order, b, a)
+        a, b = b, a
+    end
+    if Base.lt(order, c, a)
+        a, c = c, a
+    end
+    if Base.lt(order, c, b)
+        b, c = c, b
+    end
+    return b
+end
+
+_median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
+    order,
+    (_median(order, (a, b, c)), _median(order, (d, e, f)), _median(order, (g, h, i))),
+)
+
 function maptasks(f, xs)
     tasks = Task[]
     @sync for x in xs
