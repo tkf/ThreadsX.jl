@@ -126,6 +126,12 @@ ParallelSortAlgorithm(alg::ParallelSortAlgorithm) = alg
 ParallelSortAlgorithm(::typeof(MergeSort)) = ParallelMergeSortAlg()
 ParallelSortAlgorithm(::typeof(QuickSort)) = ParallelQuickSortAlg()
 
+# bypass `fpsort!`
+_sort!(v, a, o) = sort!(v, first(axes(v, 1)), last(axes(v, 1)), a, o)
+# TODO: Implement fast `NaN` support as done in `fpsort!`.
+# TODO: Use `_sort!` instead of `sort!` for small case (once the `NaN`
+# support is implemented).
+
 """
     ThreadsX.sort(xs; [smallsort, smallsize, basesize, alg, lt, by, rev, order])
 
@@ -158,5 +164,5 @@ function ThreadsX.sort!(
     if maybe_counting_sort!(xs, ordr)
         return xs
     end
-    return sort!(xs, alg, ordr)
+    return _sort!(xs, alg, ordr)
 end
