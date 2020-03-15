@@ -53,9 +53,10 @@ function _quicksort!(
     # Compute sizes of each partition for each chunks.
     chunks = zip(_partition(xs, alg.basesize), _partition(cs, alg.basesize))
     results = maptasks(partition_sizes!(pivot, order), chunks)
-    nbelows = map(first, results)
-    nequals = map(last, results)
-    naboves = [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
+    nbelows::Vector{Int} = map(first, results)
+    nequals::Vector{Int} = map(last, results)
+    naboves::Vector{Int} =
+        [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
     @check length(chunks) == length(nbelows) == length(nequals) == length(naboves)
     @check all(>=(0), naboves)
     singleton_chunkid = map(nbelows, nequals, naboves) do nb, ne, na
