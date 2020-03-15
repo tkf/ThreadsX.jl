@@ -1,5 +1,7 @@
-__map(f, itr; kwargs...) = tcollect(Map(f), itr; kwargs...)
-__map(f, itrs...; kwargs...) = tcollect(MapSplat(f), zip(itrs...); kwargs...)
+__map(f, itr; kwargs...) =
+    tcollect(Map(f), itr; basesize = default_basesize(itr), kwargs...)
+__map(f, itrs...; kwargs...) =
+    tcollect(MapSplat(f), zip(itrs...); basesize = default_basesize(itrs[1]), kwargs...)
 
 function _map(f, itr, itrs...; kwargs...)
     ys = __map(f, itr, itrs...; kwargs...)
