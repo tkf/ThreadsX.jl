@@ -132,6 +132,9 @@ _sort!(v, a, o) = sort!(v, first(axes(v, 1)), last(axes(v, 1)), a, o)
 # TODO: Use `_sort!` instead of `sort!` for small case (once the `NaN`
 # support is implemented).
 
+defalg(v::AbstractArray) = ParallelMergeSortAlg()
+defalg(v::AbstractArray{<:Union{Number, Missing}}) = ParallelQuickSortAlg()
+
 """
     ThreadsX.sort(xs; [smallsort, smallsize, basesize, alg, lt, by, rev, order])
 
@@ -144,7 +147,7 @@ function ThreadsX.sort!(
     smallsort = nothing,
     smallsize = nothing,
     basesize = nothing,
-    alg::Base.Sort.Algorithm = ParallelMergeSortAlg(),
+    alg::Base.Sort.Algorithm = defalg(xs),
     lt = isless,
     by = identity,
     rev::Union{Bool,Nothing} = nothing,

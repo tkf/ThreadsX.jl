@@ -78,6 +78,7 @@ end
 end
 
 @testset "UI" begin
+    @test ThreadsX.sort(1:10) == 1:10
     @test ThreadsX.sort(1:10; alg = MergeSort) == 1:10
     @test ThreadsX.sort(1:10; alg = QuickSort) == 1:10
 end
