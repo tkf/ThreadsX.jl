@@ -1,8 +1,9 @@
 Base.@kwdef struct ParallelQuickSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortAlgorithm
     smallsort::Alg = Base.Sort.DEFAULT_UNSTABLE
     smallsize::SmallSize = nothing  # lazily determined
-    basesize::BaseSize = nothing  # lazily determined
+    basesize::BaseSize = 10_000
 end
+# `basesize` is tuned using `Float64`.  Make it `eltype`-aware?
 
 function Base.sort!(
     v::AbstractVector,
@@ -40,10 +41,28 @@ function _quicksort!(
     mutable_xs = false,
 )
     @check length(ys) == length(xs)
-    if length(ys) <= alg.smallsize
-        return sort!(ys_is_result ? ys : xs, alg.smallsort, order)
+    if length(ys) <= max(8, alg.smallsize)
+        if ys_is_result
+            zs = copyto!(ys, xs)
+        else
+            zs = xs
+        end
+        return sort!(zs, alg.smallsort, order)
     end
-    pivot = xs[end÷2]
+    pivot = _median(
+        order,
+        (
+            xs[1],
+            xs[end÷8],
+            xs[end÷4],
+            xs[3*(end÷8)],
+            xs[end÷2],
+            xs[5*(end÷8)],
+            xs[3*(end÷4)],
+            xs[7*(end÷8)],
+            xs[end],
+        ),
+    )
 
     # TODO: Calculate extrema during the first pass if it's possible
     # to use counting sort.
@@ -53,9 +72,10 @@ function _quicksort!(
     # Compute sizes of each partition for each chunks.
     chunks = zip(_partition(xs, alg.basesize), _partition(cs, alg.basesize))
     results = maptasks(partition_sizes!(pivot, order), chunks)
-    nbelows = map(first, results)
-    nequals = map(last, results)
-    naboves = [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
+    nbelows::Vector{Int} = map(first, results)
+    nequals::Vector{Int} = map(last, results)
+    naboves::Vector{Int} =
+        [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
     @check length(chunks) == length(nbelows) == length(nequals) == length(naboves)
     @check all(>=(0), naboves)
     singleton_chunkid = map(nbelows, nequals, naboves) do nb, ne, na
@@ -107,7 +127,7 @@ function _quicksort!(
             ys_new = view(ys, idx)
             xs_new = view(xs, idx)
             cs_new = view(cs, idx)
-            @spawn begin
+            @spawn let zs
                 if mutable_xs
                     zs = xs_new
                 else
