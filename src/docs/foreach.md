@@ -15,7 +15,7 @@ Although `ThreadsX.foreach` can be nested, it is highly recommended to
 use `CartesianIndices` or `Iterators.product` whenever applicable so
 that `ThreadsX.foreach` can load-balance across multiple levels of
 loops.  Otherwise (when nesting `ThreadsX.foreach`) it is important to
-set `basesize` for inner loops to small values (e.g., `basesize = 1`).
+set `basesize` for outer loops to small values (e.g., `basesize = 1`).
 
 # Examples
 
