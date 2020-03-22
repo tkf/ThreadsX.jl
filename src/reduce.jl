@@ -126,6 +126,26 @@ ThreadsX.extrema(f, itr; kw...) = reduce(
     kw...,
 )
 
+ThreadsX.issorted(
+    itr;
+    lt = isless,
+    by = identity,
+    rev::Union{Bool,Nothing} = nothing,
+    order::Base.Ordering = Base.Forward,
+    kw...,
+) = ThreadsX.issorted(itr, Base.ord(lt, by, rev, order); kw...)
+
+ThreadsX.issorted(itr, order::Base.Ordering; kw...) =
+    ThreadsX.all(
+        zip(
+            view(itr, firstindex(itr):lastindex(itr)-1),
+            view(itr, firstindex(itr)+1:lastindex(itr)),
+        );
+        kw...,
+    ) do (x1, x2)
+        !Base.lt(order, x2, x1)
+    end
+
 struct PushUnique{F} <: Function
     f::F
 end
