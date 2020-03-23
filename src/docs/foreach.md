@@ -1,4 +1,4 @@
-    ThreadsX.foreach(f, collections...; basesize)
+    ThreadsX.foreach(f, collections...; basesize, simd)
 
 A parallel version of
 
@@ -16,6 +16,12 @@ use `CartesianIndices` or `Iterators.product` whenever applicable so
 that `ThreadsX.foreach` can load-balance across multiple levels of
 loops.  Otherwise (when nesting `ThreadsX.foreach`) it is important to
 set `basesize` for outer loops to small values (e.g., `basesize = 1`).
+
+# Keyword Arguments
+- `basesize`: The size of base case.
+- `simd`: `false`, `true`, `:ivdep`, or `Val` of one of them.  If
+  `true`/`:ivdep`, the inner-most loop of each base case is annotated
+  by `@simd`/`@simd ivdep`.  This does not occur if `false` (default).
 
 # Examples
 

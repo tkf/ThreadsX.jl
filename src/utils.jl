@@ -13,6 +13,18 @@ else
     const _partition = adhoc_partition
 end
 
+@inline _asval(x::Val) = x
+@inline _asval(x) = Val(x)
+
+const SIMDValFlag = Union{Val{true}, Val{false}, Val{:ivdep}}
+const SIMDFlag = Union{Bool, Symbol, SIMDValFlag}
+
+__verify_simd_flag(simd::SIMDValFlag, _) = simd
+__verify_simd_flag(_, simd) =
+    throw(ArgumentError("Invalid `simd` option: $(repr(simd))"))
+
+verify_simd_flag(simd) = __verify_simd_flag(_asval(simd), simd)
+
 function _median(order, (a, b, c)::NTuple{3,Any})
     # Sort `(a, b, c)`:
     if Base.lt(order, b, a)
