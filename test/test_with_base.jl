@@ -3,6 +3,8 @@ module TestWithBase
 using Test
 using ThreadsX
 
+args_and_kwargs(args...; kwargs...) = args, (; kwargs...)
+
 inc(x) = x + 1
 
 raw_testdata = """
@@ -61,6 +63,15 @@ findall([])
 findall(identity, [])
 extrema(1:10)
 extrema(sin, 1:10)
+issorted(0:9)
+issorted(0:9; rev=true)
+issorted(0:9; by=_ -> 1)
+issorted(reverse(0:9))
+issorted(reverse(0:9); rev=true)
+issorted(reverse(0:9); by=_ -> 1)
+issorted([])
+issorted([]; rev=true)
+issorted([]; by=_ -> 1)
 unique([1, 2, 6, 2])
 unique(Real[1, 1.0, 2])
 unique(x -> x^2, [1, -1, -3, 4, 3])
@@ -68,25 +79,22 @@ Set([1, -1, -3, 4, 3])
 Set(x^2 for x in [1, -1, -3, 4, 3])
 """
 
-# An array of `(label, (f, args))`
+# An array of `(label, (f, args, kwargs))`
 testdata = map(split(raw_testdata, "\n", keepempty = false)) do x
     @debug "Parsing: $x"
-    m = match(r"([^(]+)\((.*),? *\)$", x)
-    f = m[1]
-    args = m[2]
-    code = "$f, tuple($args)"
-    @debug "Evaling: $code"
-    ex = Meta.parse(code)
-    (x, @eval($ex))
+    f, rest = split(x, "(", limit = 2)
+    ex = Meta.parse("DUMMY($rest")
+    ex.args[1] = args_and_kwargs
+    @eval ($x, ($(Symbol(f)), $ex...))
 end
 
-@testset "$label" for (label, (f, args)) in testdata
+@testset "$label" for (label, (f, args, kwargs)) in testdata
     g = getproperty(ThreadsX, nameof(f))
     @testset "default basesize" begin
-        @test g(args...) == f(args...)
+        @test g(args...; kwargs...) == f(args...; kwargs...)
     end
     @testset for basesize in 1:3
-        @test g(args...; basesize = basesize) == f(args...)
+        @test g(args...; kwargs..., basesize = basesize) == f(args...; kwargs...)
     end
 end
 

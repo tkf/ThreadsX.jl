@@ -23,6 +23,7 @@ function findall end
 # function argmax end
 # function argmin end
 function extrema end
+function issorted end
 function unique end
 function Set end
 
