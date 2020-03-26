@@ -10,9 +10,7 @@ function addavg!(c, a, b)
     c[] += (a + b) / 2
 end
 
-@testset for simd in [simdflags; Val.(simdflags)],
-    n in [10, 100, 1000]
-
+@testset for simd in [simdflags; Val.(simdflags)], n in [10, 100, 1000]
     basesize = n^2 ÷ 4
 
     @testset "linear" begin
@@ -40,6 +38,14 @@ end
         )
         @test C0 == C1
     end
+end
+
+@testset begin
+    @test_throws(
+        ArgumentError("Invalid `simd` option: :invalid"),
+        ThreadsX.foreach(identity, 1:0; simd = :invalid),
+    )
+    @test_throws(Exception, ThreadsX.foreach(identity, 1:0; simd = Val(:invalid)),)
 end
 
 end  # module
