@@ -70,12 +70,36 @@ julia> ThreadsX.foreach(referenceable(A)) do x
        end
 ```
 
-Nested loops can be written using `CartesianIndices`:
+Nested loops can be written using `Iterators.product`:
 
 ```julia
 julia> A = 1:3
        B = 1:2
        C = zeros(3, 2);
+
+julia> ThreadsX.foreach(referenceable(C), Iterators.product(A, B)) do c, (a, b)
+           c[] = a * b
+       end
+       @assert C == A .* reshape(B, 1, :)
+```
+
+This is equivalent to the following sequential code
+
+```julia
+julia> for j in eachindex(B), i in eachindex(A)
+           @inbounds C[i, j] = A[i] * B[j]
+       end
+       @assert C == A .* reshape(B, 1, :)
+```
+
+This loop can be expressed also with explicit indexing (which is
+closer to the sequential code):
+
+```julia
+julia> ThreadsX.foreach(Iterators.product(eachindex(A), eachindex(B))) do (i, j)
+           @inbounds C[i, j] = A[i] * B[j]
+       end
+       @assert C == A .* reshape(B, 1, :)
 
 julia> ThreadsX.foreach(CartesianIndices(C)) do I
            @inbounds C[I] = A[I[1]] * B[I[2]]
@@ -83,11 +107,7 @@ julia> ThreadsX.foreach(CartesianIndices(C)) do I
        @assert C == A .* reshape(B, 1, :)
 ```
 
-Or, alternatively, using `Iterators.product`:
-
-```julia
-julia> ThreadsX.foreach(Iterators.product(eachindex(A), eachindex(B))) do (i, j)
-           @inbounds C[i, j] = A[i] * B[j]
-       end
-       @assert C == A .* reshape(B, 1, :)
-```
+Note the difference in the ordering in the syntax; i.e., `for j in
+eachindex(B), i in eachindex(A)` and `Iterators.product(eachindex(A),
+eachindex(B))`.  These are equivalent in the sense `eachindex(A)` is
+the inner most loop in both cases.
