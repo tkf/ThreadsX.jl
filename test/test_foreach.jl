@@ -40,7 +40,7 @@ end
     end
 end
 
-@testset begin
+@testset "argument validation" begin
     @test_throws(
         ArgumentError("Invalid `simd` option: :invalid"),
         ThreadsX.foreach(identity, 1:0; simd = :invalid),

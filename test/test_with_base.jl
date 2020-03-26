@@ -149,7 +149,7 @@ end
 @testset "foreach(..., product(1:2, 1:3, 1:4))" begin
     test_all_implementations(:foreach) do foreach
         xs = Iterators.product(1:2, 1:3, 1:4)
-        ys = fill((-1, -1), 2, 3, 4)
+        ys = fill((-1, -1, -1), 2, 3, 4)
         foreach(xs) do I
             ys[I...] = I
         end
