@@ -21,11 +21,11 @@ To find out functions supported by ThreadsX.jl, just type
 julia> using ThreadsX
 
 julia> ThreadsX.
-MergeSort       any             findlast        maximum         sort!
-QuickSort       count           foreach         minimum         sum
-Set             extrema         map             prod            unique
-StableQuickSort findall         map!            reduce
-all             findfirst       mapreduce       sort
+MergeSort       any             findlast        mapreduce       sort
+QuickSort       count           foreach         maximum         sort!
+Set             extrema         issorted        minimum         sum
+StableQuickSort findall         map             prod            unique
+all             findfirst       map!            reduce
 ``````
 
 ## API
@@ -37,9 +37,15 @@ All functions that exist directly under `ThreadsX` namespace are
 public API and they implement a subset of API provided by `Base`.
 Everything inside `ThreadsX.Implementations` is implementation detail.
 The public API functions of `ThreadsX` expect that the data structure
-and function(s) passed as argument are thread-safe.  For example,
-`ThreadsX.sum(f, array)` assumes that executing `f(::eltype(array))`
-and accessing elements as in `array[i]` from multiple threads is safe.
+and function(s) passed as argument are "thread-friendly" in the sense
+that operating on _distinct_ elements in the given container from
+multiple tasks in parallel is safe. For example, `ThreadsX.sum(f,
+array)` assumes that executing `f(::eltype(array))` and accessing
+elements as in `array[i]` from multiple threads is safe.  In
+particular, this is the case if `array` is a `Vector` of immutable
+objects and `f` is a pure function in the sense it does not mutate any
+global objects.  Note that it is not required and _not recommended_ to
+use "thread-safe" array that protects accessing `array[i]` by a lock.
 
 In addition to the `Base` API, all functions accept keyword argument
 `basesize::Integer` to configure the number of elements processed by
