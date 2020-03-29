@@ -46,8 +46,17 @@ _median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
 
 function maptasks(f, xs)
     tasks = Task[]
-    @sync for x in xs
-        push!(tasks, @spawn f(x))
+    @info "Spawning $(length(xs)) tasks..."
+    @sync for (i, x) in enumerate(xs)
+        t = @spawn try
+            f(x)
+        catch err
+            @error "`f(xs[$i])`" exception = (err, catch_backtrace())
+            rethrow()
+        finally
+            @info "Task $i finished."
+        end
+        push!(tasks, t)
     end
     return map(fetch, tasks)
 end
