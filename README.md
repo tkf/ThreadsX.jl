@@ -55,6 +55,13 @@ when the time to process single item varies a lot from item to item.
 The default value of `basesize` for each function is currently an
 implementation detail.
 
+ThreadsX.jl API is deterministic in the sense that the same input
+produces the same output, independent of how `julia`'s task scheduler
+decide to execute the tasks.  However, note that `basesize` is a part
+of the input which may be set based on `Threads.nthreads()`.  To make
+the result of the computation independent of `Threads.nthreads()`
+value, `basesize` must be specified explicitly.
+
 ## Limitations
 
 * Keyword argument `dims` is not supported yet.
