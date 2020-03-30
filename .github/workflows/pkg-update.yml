@@ -24,7 +24,7 @@ jobs:
         uses: tkf/julia-update-manifests@v1
         with:
           version: '1.4'
-          projects: benchmark
+          projects: test/environments/main benchmark
 
       # https://github.com/peter-evans/create-pull-request
       # https://github.com/marketplace/actions/create-pull-request
