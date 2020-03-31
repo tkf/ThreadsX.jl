@@ -25,5 +25,6 @@ jobs:
           CompatHelper.main() do;
               run(`julia --project=test/environments/main -e "import Pkg; Pkg.instantiate(); Pkg.update()"`);
               run(`julia --project=benchmark -e "import Pkg; Pkg.instantiate(); Pkg.update()"`);
+              run(`julia --project=docs -e "import Pkg; Pkg.instantiate(); Pkg.update()"`);
           end
           '
