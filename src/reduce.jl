@@ -18,7 +18,7 @@ function ThreadsX.mapreduce(f, op, itr; kw...)
     xf, reducible = extract_transducer(itr)
     result = reduce(
         op,
-        Map(f) |> xf,
+        xf |> Map(f),
         reducible;
         init = Init(op),
         basesize = default_basesize(reducible),
