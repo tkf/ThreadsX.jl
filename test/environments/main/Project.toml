@@ -5,6 +5,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 ThreadsX = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
+Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 
 [compat]
 Aqua = "0.4.1"
