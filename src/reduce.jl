@@ -1,12 +1,13 @@
 without_basesize(; basesize = nothing, kw...) = kw
 
 function ThreadsX.reduce(op, itr; kw...)
+    xf, reducible = extract_transducer(itr)
     result = reduce(
         op,
-        Map(identity),
-        itr;
+        xf,
+        reducible;
         init = Init(op),
-        basesize = default_basesize(itr),
+        basesize = default_basesize(reducible),
         kw...,
     )
     result === Init(op) && return reduce_empty(op, eltype(itr))
@@ -14,8 +15,15 @@ function ThreadsX.reduce(op, itr; kw...)
 end
 
 function ThreadsX.mapreduce(f, op, itr; kw...)
-    result =
-        reduce(op, Map(f), itr; init = Init(op), basesize = default_basesize(itr), kw...)
+    xf, reducible = extract_transducer(itr)
+    result = reduce(
+        op,
+        xf |> Map(f),
+        reducible;
+        init = Init(op),
+        basesize = default_basesize(reducible),
+        kw...,
+    )
     result === Init(op) && return mapreduce_empty(f, op, eltype(itr))
     return result
 end
