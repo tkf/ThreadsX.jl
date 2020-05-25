@@ -64,9 +64,9 @@ deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InitialValues]]
-git-tree-sha1 = "f2938238a7ffa3819312079fbc6786140ea36fbc"
+git-tree-sha1 = "66012b0d294549c747ad02da038188deae54d408"
 uuid = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
-version = "0.2.4"
+version = "0.2.6"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
