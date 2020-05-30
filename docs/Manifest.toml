@@ -7,9 +7,9 @@ version = "2.0.0"
 
 [[BangBang]]
 deps = ["Compat", "ConstructionBase", "Future", "InitialValues", "LinearAlgebra", "Requires", "Setfield", "Tables", "ZygoteRules"]
-git-tree-sha1 = "de8a2c7c089d2e09241a5aa4cc4e1b0d0017e1fd"
+git-tree-sha1 = "72a3d798f82ab961f0e708b00d877c1505005d68"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
-version = "0.3.24"
+version = "0.3.25"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -64,9 +64,9 @@ deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InitialValues]]
-git-tree-sha1 = "66012b0d294549c747ad02da038188deae54d408"
+git-tree-sha1 = "f3458faa269a6edefb2c329c26fdc829771c993b"
 uuid = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
-version = "0.2.6"
+version = "0.2.7"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
