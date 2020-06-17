@@ -13,9 +13,9 @@ version = "2.0.0"
 
 [[BangBang]]
 deps = ["Compat", "ConstructionBase", "Future", "InitialValues", "LinearAlgebra", "Requires", "Setfield", "Tables", "ZygoteRules"]
-git-tree-sha1 = "72a3d798f82ab961f0e708b00d877c1505005d68"
+git-tree-sha1 = "3a67bd27ea6a4223a556c7b5191937479a3a717a"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
-version = "0.3.25"
+version = "0.3.26"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
