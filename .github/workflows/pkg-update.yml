@@ -46,18 +46,21 @@ jobs:
           git ls-tree -r --name-only "origin/$target" | grep -F Manifest.toml \
               | xargs git add -f --
           git add .
-          git commit -m "Merge branch '$base'" || exit 0
+          git commit -m "Merge branch '$base'" || true
 
-      # Since create-pull-request does not like when the current
-      # branch is the target branch, checkout master.
-      # https://github.com/JuliaFolds/Transducers.jl/pull/167
-      - name: "Checkout and merge to master"
-        run: |
-          if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]
+          # Since create-pull-request does not like when the current
+          # branch is the target branch, checkout master.
+          # https://github.com/JuliaFolds/Transducers.jl/pull/167
+          if [ "$(git rev-parse --abbrev-ref HEAD)" != "$base" ]
           then
-              git checkout master
-              git merge --ff-only create-pull-request/pkg-update
+              git checkout "$base"
+              git merge --ff-only "$target"
           fi
+
+          git ls-tree -r --name-only "origin/$base" | grep -F Manifest.toml \
+              | xargs git checkout "origin/$base" --
+          git ls-tree -r --name-only "origin/$base" | grep -F Manifest.toml \
+              | xargs git add -f --
 
       # https://github.com/tkf/julia-update-manifests
       - name: Update */Manifest.toml
