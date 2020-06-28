@@ -16,16 +16,22 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           # https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
 
-      - name: 'Merge master to create-pull-request/pkg-update-2'
+      - name: 'Merge master to create-pull-request/pkg-update'
         run: |
           base="master"
-          target="create-pull-request/pkg-update-2"
+          target="create-pull-request/pkg-update"
 
           git_fetch_origin() {
               git fetch --unshallow origin "$1" || git fetch origin "$1"
           }
 
           set -ex
+
+          if [ -n "$GITHUB_ACTOR" ]
+          then
+              git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+              git config --global user.name "$GITHUB_ACTOR"
+          fi
 
           git_fetch_origin "refs/heads/$base:refs/remotes/origin/$base"
           git checkout -B "$base" "origin/$base"
@@ -50,7 +56,7 @@ jobs:
           if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]
           then
               git checkout master
-              git merge --ff-only create-pull-request/pkg-update-2
+              git merge --ff-only create-pull-request/pkg-update
           fi
 
       # https://github.com/tkf/julia-update-manifests
@@ -80,7 +86,7 @@ jobs:
           # --- Commit Message and squash Method
           # https://doc.mergify.io/actions.html#commit-message-and-squash-method
           labels: no changelog
-          branch: create-pull-request/pkg-update-2
+          branch: create-pull-request/pkg-update
           base: master
       - name: Check output environment variable
         run: echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
