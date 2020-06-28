@@ -14,10 +14,17 @@ jobs:
       - uses: actions/checkout@v2
 
       # https://github.com/tkf/julia-merge-except-manifests
-      - name: 'Merge master to create-pull-request/pkg-update'
+      - name: 'Merge master to create-pull-request/pkg-update-2'
         uses: tkf/julia-merge-except-manifests@v1
         with:
-          target: create-pull-request/pkg-update
+          target: create-pull-request/pkg-update-2
+
+      # Since create-pull-request does not like when the current
+      # branch is the target branch, checkout a temporary one.
+      # https://github.com/JuliaFolds/Transducers.jl/pull/167
+      - name: "Checkout a temporary branch"
+        run:
+          git checkout -b create-pull-request/pkg-update-tmp
 
       # https://github.com/tkf/julia-update-manifests
       - name: Update */Manifest.toml
@@ -29,7 +36,7 @@ jobs:
       # https://github.com/peter-evans/create-pull-request
       # https://github.com/marketplace/actions/create-pull-request
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v1
+        uses: peter-evans/create-pull-request@v2
         with:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           commit-message: Update */Manifest.toml
@@ -46,8 +53,7 @@ jobs:
           # --- Commit Message and squash Method
           # https://doc.mergify.io/actions.html#commit-message-and-squash-method
           labels: no changelog
-          branch: create-pull-request/pkg-update
-          branch-suffix: none
+          branch: create-pull-request/pkg-update-2
           base: master
       - name: Check output environment variable
         run: echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
