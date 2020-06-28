@@ -20,6 +20,7 @@ jobs:
         run: |
           git fetch --unshallow origin master
           git fetch origin create-pull-request/pkg-update-2 || true
+          git checkout -B master origin/master
 
       # https://github.com/tkf/julia-merge-except-manifests
       - name: 'Merge master to create-pull-request/pkg-update-2'
