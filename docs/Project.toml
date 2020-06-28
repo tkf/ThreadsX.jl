@@ -1,4 +1,5 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+OnlineStats = "a15396b6-48d5-5d58-9928-6d29437db91e"
 ThreadsX = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
