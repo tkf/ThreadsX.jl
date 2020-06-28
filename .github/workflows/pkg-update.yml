@@ -60,9 +60,6 @@ jobs:
           version: '1.4'
           projects: test/environments/main benchmark docs
 
-      - name: "spam"
-        run: "echo spam > src/ThreadsX.jl"
-
       # https://github.com/peter-evans/create-pull-request
       # https://github.com/marketplace/actions/create-pull-request
       - name: Create Pull Request
