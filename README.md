@@ -9,17 +9,17 @@
 Add prefix `ThreadsX.` to functions from `Base` to get some speedup,
 if supported.  Example:
 
-``````julia
-using ThreadsX
-ThreadsX.sum(sin, 1:10_000)
-``````
+```julia
+julia> using ThreadsX
+
+julia> ThreadsX.sum(gcd(42, i) == 1 for i in 1:10_000)
+2857
+```
 
 To find out functions supported by ThreadsX.jl, just type
 `ThreadsX.` + <kbd>TAB</kbd> in the REPL:
 
 ``````julia
-julia> using ThreadsX
-
 julia> ThreadsX.
 MergeSort       any             findlast        mapreduce       sort
 QuickSort       count           foreach         maximum         sort!
@@ -27,6 +27,39 @@ Set             extrema         issorted        minimum         sum
 StableQuickSort findall         map             prod            unique
 all             findfirst       map!            reduce
 ``````
+
+## Interoperability
+
+### Rich collection support
+
+The `reduce`-based functions support any collections that implement
+[`SplittablesBase.jl`](https://github.com/tkf/SplittablesBase.jl)
+interface including arrays, `Dict`, `Set`, and iterator
+transformations.  In particular, these functions support iterator
+comprehension:
+
+```julia
+julia> ThreadsX.sum(y for x in 1:10 if isodd(x) for y in 1:x^2)
+4917
+```
+
+For advanced usage, they also support
+[`Transducers.eduction`](https://juliafolds.github.io/Transducers.jl/dev/manual/#Transducers.eduction)
+constructed with parallelizable transducers.
+
+### OnlineStats.jl
+
+`ThreadsX.reduce` supports an `OnlineStat` from
+[OnlineStats.jl](https://github.com/joshday/OnlineStats.jl) as the
+first argument as long as it implements the
+[merging interface](https://github.com/joshday/OnlineStatsBase.jl#interface):
+
+```julia
+julia> using OnlineStats: Mean
+
+julia> ThreadsX.reduce(Mean(), 1:10)
+Mean: n=10 | value=5.5
+```
 
 ## API
 
