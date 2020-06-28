@@ -38,6 +38,18 @@ end
         )
         @test C0 == C1
     end
+
+    @testset "foreach(f, referenceable(C), product(A, B))" begin
+        A = 1:3
+        B = 1:2
+        C = zeros(3, 2)
+
+        ThreadsX.foreach(referenceable(C), Iterators.product(A, B)) do c, (a, b)
+            c[] = a * b
+        end
+
+        @test C == A .* reshape(B, 1, :)
+    end
 end
 
 @testset "argument validation" begin
