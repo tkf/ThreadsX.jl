@@ -20,11 +20,15 @@ jobs:
           target: create-pull-request/pkg-update-2
 
       # Since create-pull-request does not like when the current
-      # branch is the target branch, checkout a temporary one.
+      # branch is the target branch, checkout master.
       # https://github.com/JuliaFolds/Transducers.jl/pull/167
-      - name: "Checkout a temporary branch"
-        run:
-          git checkout -b create-pull-request/pkg-update-tmp
+      - name: "Checkout and merge to master"
+        run: |
+          if [ "$(git rev-parse --abbrev-ref HEAD)" != "master" ]
+          then
+              git checkout master
+              git merge --ff-only create-pull-request/pkg-update-2
+          fi
 
       # https://github.com/tkf/julia-update-manifests
       - name: Update */Manifest.toml
