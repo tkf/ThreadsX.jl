@@ -16,6 +16,11 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           # https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
 
+      - name: "Fetch branches"
+        run: |
+          git fetch --unshallow origin master
+          git fetch origin create-pull-request/pkg-update-2 || true
+
       # https://github.com/tkf/julia-merge-except-manifests
       - name: 'Merge master to create-pull-request/pkg-update-2'
         uses: tkf/julia-merge-except-manifests@dev
