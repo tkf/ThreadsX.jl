@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+      # Allowing CIs on push since create-pull-request requires `on:
+      # push` event to trigger the downstream actions:
+      # https://github.com/peter-evans/create-pull-request/issues/48#issuecomment-584209254
+      - create-pull-request/pkg-update
     tags: '*'
   pull_request:
 
