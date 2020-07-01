@@ -16,10 +16,10 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           # https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
 
-      - name: 'Merge master to create-pull-request/pkg-update'
+      - name: 'Merge master to create-pull-request/pkg-update-debug'
         run: |
           base="master"
-          target="create-pull-request/pkg-update"
+          target="create-pull-request/pkg-update-debug"
 
           git_fetch_origin() {
               git fetch --unshallow origin "$1" || git fetch origin "$1"
@@ -89,7 +89,7 @@ jobs:
           # --- Commit Message and squash Method
           # https://doc.mergify.io/actions.html#commit-message-and-squash-method
           labels: no changelog
-          branch: create-pull-request/pkg-update
+          branch: create-pull-request/pkg-update-debug
           base: master
       - name: Check output environment variable
         run: echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
