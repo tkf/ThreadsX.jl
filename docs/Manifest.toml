@@ -67,9 +67,9 @@ version = "0.8.2"
 
 [[Documenter]]
 deps = ["Base64", "Dates", "DocStringExtensions", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
-git-tree-sha1 = "395fa1554c69735802bba37d9e7d9586fd44326c"
+git-tree-sha1 = "f3464968c65fc78846dad1c038c474a2c39bbb23"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-version = "0.24.11"
+version = "0.25.0"
 
 [[Future]]
 deps = ["Random"]
@@ -136,9 +136,9 @@ version = "1.5.3"
 
 [[OnlineStatsBase]]
 deps = ["AbstractTrees", "Dates", "LinearAlgebra", "OrderedCollections", "Statistics", "StatsBase"]
-git-tree-sha1 = "a161dd2472991774755ebb18c62d2ac0efc25022"
+git-tree-sha1 = "509f36ef5e66d40c4141a661dbdab2e6a99d3a01"
 uuid = "925886fa-5bf2-5e8e-b522-a9147a512338"
-version = "1.4.2"
+version = "1.4.3"
 
 [[OrderedCollections]]
 git-tree-sha1 = "12ce190210d278e12644bcadf5b21cbdcf225cd3"
@@ -258,7 +258,7 @@ version = "0.1.3-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "6fd9d94795574be8927d0138d8db6dbf9450344d"
+git-tree-sha1 = "06d43c4c1d97f672c1ce662952e2ed994b348d49"
 repo-rev = "master"
 repo-url = "https://github.com/tkf/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
