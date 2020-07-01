@@ -1,4 +1,5 @@
 [deps]
+BangBang = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 OnlineStats = "a15396b6-48d5-5d58-9928-6d29437db91e"
