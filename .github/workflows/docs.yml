@@ -19,8 +19,6 @@ jobs:
       - run: julia -e 'using Pkg; pkg"add https://github.com/tkf/Run.jl"'
       - run: julia -e 'using Run; Run.prepare_docs()'
       - run: julia -e 'using Run; Run.docs()'
-      - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.SSH_KEY }}
-        run: julia --project=docs docs/make.jl
