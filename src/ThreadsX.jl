@@ -52,6 +52,7 @@ using Transducers:
     ReduceIf,
     Transducers,
     extract_transducer,
+    opcompose,
     reduced,
     right,
     tcollect,
