@@ -18,7 +18,7 @@ function ThreadsX.mapreduce(f, op, itr; kw...)
     xf, reducible = extract_transducer(itr)
     result = reduce(
         op,
-        xf |> Map(f),
+        opcompose(xf, Map(f)),
         reducible;
         init = Init(op),
         basesize = default_basesize(reducible),
@@ -66,7 +66,7 @@ asbool(f) = x -> f(x)::Bool
 ThreadsX.any(itr; kw...) = ThreadsX.any(identity, itr; kw...)
 ThreadsX.any(f, itr; kw...) = reduce(
     right,  # no need to use `|`
-    Map(asbool(f)) |> ReduceIf(identity),
+    opcompose(Map(asbool(f)), ReduceIf(identity)),
     simd = Val(true),
     basesize = default_basesize(ThreadsX.any, f, itr),
     itr;
@@ -77,7 +77,7 @@ ThreadsX.any(f, itr; kw...) = reduce(
 ThreadsX.all(itr; kw...) = ThreadsX.all(identity, itr; kw...)
 ThreadsX.all(f, itr; kw...) = reduce(
     right,  # no need to use `&`
-    Map(asbool(f)) |> ReduceIf(!),
+    opcompose(Map(asbool(f)), ReduceIf(!)),
     itr;
     simd = Val(true),
     basesize = default_basesize(ThreadsX.all, f, itr),
@@ -101,7 +101,7 @@ function ThreadsX.findlast(f, array::AbstractArray; kw...)
     idx = keys(array)
     return reduce(
         right,
-        Map(i -> (@inbounds idx[i])) |> ReduceIf(i -> f(@inbounds array[i])),
+        opcompose(Map(i -> (@inbounds idx[i])), ReduceIf(i -> f(@inbounds array[i]))),
         lastindex(idx):-1:firstindex(idx);
         init = nothing,
         simd = Val(true),
