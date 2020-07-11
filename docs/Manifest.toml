@@ -271,7 +271,7 @@ version = "0.1.4-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "91eaca9947aaec180459d372afbc588777aee062"
+git-tree-sha1 = "4c818fa551f00e41d134b880664a8f392a39a04a"
 repo-rev = "master"
 repo-url = "https://github.com/tkf/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
