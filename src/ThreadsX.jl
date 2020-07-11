@@ -39,13 +39,14 @@ using ArgCheck: @argcheck, @check
 using BangBang: SingletonVector, append!!, push!!, union!!
 using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
 using ConstructionBase: setproperties
-using InitialValues: Init, asmonoid
+using InitialValues: asmonoid
 using Referenceables: referenceable
 using Setfield: @set
 using Transducers:
     Cat,
     Empty,
     Filter,
+    Init,
     Map,
     MapSplat,
     OnInit,
