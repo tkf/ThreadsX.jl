@@ -33,7 +33,7 @@ all             findfirst       map!            reduce
 ### Rich collection support
 
 The `reduce`-based functions support any collections that implement
-[`SplittablesBase.jl`](https://github.com/tkf/SplittablesBase.jl)
+[`SplittablesBase.jl`](https://github.com/JuliaFolds/SplittablesBase.jl)
 interface including arrays, `Dict`, `Set`, and iterator
 transformations.  In particular, these functions support iterator
 comprehension:
@@ -103,8 +103,8 @@ value, `basesize` must be specified explicitly.
 ## Implementations
 
 Most of `reduce`-based functions are implemented as thin wrappers of
-[`Transducers.jl`](https://github.com/tkf/Transducers.jl).
+[`Transducers.jl`](https://github.com/JuliaFolds/Transducers.jl).
 
 Custom collections can support ThreadsX.jl API by implementing
-[`SplittablesBase.jl`](https://github.com/tkf/SplittablesBase.jl)
+[`SplittablesBase.jl`](https://github.com/JuliaFolds/SplittablesBase.jl)
 interface.
