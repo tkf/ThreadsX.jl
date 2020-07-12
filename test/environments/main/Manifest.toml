@@ -19,7 +19,7 @@ version = "2.0.0"
 
 [[BangBang]]
 deps = ["Compat", "ConstructionBase", "Future", "InitialValues", "LinearAlgebra", "Requires", "Setfield", "Tables", "ZygoteRules"]
-git-tree-sha1 = "dab8b922f756b5f831a668d588cb29e41021712d"
+git-tree-sha1 = "014e4414030507351402f4039d04fae8d1c33e21"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/BangBang.jl.git"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
@@ -278,11 +278,11 @@ version = "0.1.5-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "bc9f123c52fff0657a89b702c362f0ccf40d24fc"
+git-tree-sha1 = "a2281af81336e7384f4a01283608ddcdc5266631"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
-version = "0.4.42-DEV"
+version = "0.4.43-DEV"
 
 [[UUIDs]]
 deps = ["Random", "SHA"]
