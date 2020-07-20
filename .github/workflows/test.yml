@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         # Edit ../../.mergify.yml when adding a new version.
-        julia-version: ['^1.5.0-rc1', '1.4', '1.3', 'nightly']
+        julia-version: ['~1.5.0-rc1', '1.4', '1.3', 'nightly']
       fail-fast: false
     name: Test Julia ${{ matrix.julia-version }}
     steps:
