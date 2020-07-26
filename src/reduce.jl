@@ -2,7 +2,7 @@ without_basesize(; basesize = nothing, kw...) = kw
 
 function ThreadsX.reduce(op, itr; kw...)
     xf, reducible = extract_transducer(itr)
-    result = reduce(
+    result = foldxt(
         op,
         xf,
         reducible;
@@ -16,7 +16,7 @@ end
 
 function ThreadsX.mapreduce(f, op, itr; kw...)
     xf, reducible = extract_transducer(itr)
-    result = reduce(
+    result = foldxt(
         op,
         opcompose(xf, Map(f)),
         reducible;
@@ -33,7 +33,7 @@ function ThreadsX.mapreduce(f, op, itr, itrs...; kw...)
         # `Base` just does `reduce(op, map(f, ...))`:
         return mapreduce(f, op, itr, itrs...; without_basesize(; kw...)...)
     end
-    return reduce(
+    return foldxt(
         op,
         MapSplat(f),
         zip(itr, itrs...);
@@ -64,7 +64,7 @@ asbool(f) = x -> f(x)::Bool
 
 # TODO: `any` and `all` should be done with "unordered" version
 ThreadsX.any(itr; kw...) = ThreadsX.any(identity, itr; kw...)
-ThreadsX.any(f, itr; kw...) = reduce(
+ThreadsX.any(f, itr; kw...) = foldxt(
     right,  # no need to use `|`
     opcompose(Map(asbool(f)), ReduceIf(identity)),
     simd = Val(true),
@@ -75,7 +75,7 @@ ThreadsX.any(f, itr; kw...) = reduce(
 )
 
 ThreadsX.all(itr; kw...) = ThreadsX.all(identity, itr; kw...)
-ThreadsX.all(f, itr; kw...) = reduce(
+ThreadsX.all(f, itr; kw...) = foldxt(
     right,  # no need to use `&`
     opcompose(Map(asbool(f)), ReduceIf(!)),
     itr;
@@ -86,7 +86,7 @@ ThreadsX.all(f, itr; kw...) = reduce(
 )
 
 ThreadsX.findfirst(itr; kw...) = ThreadsX.findfirst(identity, itr; kw...)
-ThreadsX.findfirst(f, array::AbstractArray; kw...) = reduce(
+ThreadsX.findfirst(f, array::AbstractArray; kw...) = foldxt(
     right,
     ReduceIf(i -> f(@inbounds array[i])),
     keys(array);
@@ -99,7 +99,7 @@ ThreadsX.findfirst(f, array::AbstractArray; kw...) = reduce(
 ThreadsX.findlast(itr; kw...) = ThreadsX.findlast(identity, itr; kw...)
 function ThreadsX.findlast(f, array::AbstractArray; kw...)
     idx = keys(array)
-    return reduce(
+    return foldxt(
         right,
         opcompose(Map(i -> (@inbounds idx[i])), ReduceIf(i -> f(@inbounds array[i]))),
         lastindex(idx):-1:firstindex(idx);
@@ -125,7 +125,7 @@ end
 _minmax((min0, max0), (min1, max1)) = (min(min0, min1), max(max0, max1))
 
 ThreadsX.extrema(itr; kw...) = ThreadsX.extrema(identity, itr; kw...)
-ThreadsX.extrema(f, itr; kw...) = reduce(
+ThreadsX.extrema(f, itr; kw...) = foldxt(
     asmonoid(_minmax),
     Map(x -> (y = f(x); (y, y))),
     itr;
@@ -189,7 +189,7 @@ function ThreadsX.unique(f::F, itr::AbstractVector{X}; kw...) where {F,X}
     # Using inference as an optimization. The result of this inference
     # does not affect the result:
     Y = Core.Compiler.return_type(f, Tuple{X})
-    ys, = reduce(
+    ys, = foldxt(
         PushUnique(f),
         Map(identity),
         itr;
