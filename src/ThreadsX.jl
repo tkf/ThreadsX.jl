@@ -67,6 +67,13 @@ else
     @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
 end
 
+if isdefined(Transducers, :foldxt)
+    using Transducers: foldxt
+else
+    foldxt(rf, xf, xs; kw...) = reduce(rf, xf, xs; kw...)
+    foldxt(rf, xs; kw...) = reduce(rf, Map(identity), xs; kw...)
+end
+
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
