@@ -115,7 +115,7 @@ ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
 
 @inline return_nothing(_...) = nothing
 
-ThreadsX.foreach(f::F, itr; kw...) where {F} = reduce(
+ThreadsX.foreach(f::F, itr; kw...) where {F} = foldxt(
     return_nothing,
     Map(f),
     itr;
@@ -124,7 +124,7 @@ ThreadsX.foreach(f::F, itr; kw...) where {F} = reduce(
     kw...,
 )
 
-ThreadsX.foreach(f::F, itr, itrs...; kw...) where {F} = reduce(
+ThreadsX.foreach(f::F, itr, itrs...; kw...) where {F} = foldxt(
     return_nothing,
     MapSplat(f),
     zip(itr, itrs...);
