@@ -278,7 +278,7 @@ version = "0.1.6-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "ea0887c55744af295a764cb290ca2302f7c0e32a"
+git-tree-sha1 = "d4cbbd7bae09d489e89470fa56e6376c8143887c"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
