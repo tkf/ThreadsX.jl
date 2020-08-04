@@ -23,4 +23,8 @@ end
     Aqua.test_project_extras(ThreadsX)
 end
 
+@testset "Stale dependencies" begin
+    Aqua.test_stale_deps(ThreadsX)
+end
+
 end  # module
