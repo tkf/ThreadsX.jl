@@ -8,9 +8,11 @@ version = "0.3.3"
 
 [[Aqua]]
 deps = ["Pkg", "Test"]
-git-tree-sha1 = "0060f6e92605d768e1cb9e0ac3bd17966bc0209e"
+git-tree-sha1 = "3b1a4584698aa8d6c47a7781d201c0caa88e4af1"
+repo-rev = "master"
+repo-url = "https://github.com/JuliaTesting/Aqua.jl.git"
 uuid = "4c88cf16-eb10-579e-8560-4a9242c79595"
-version = "0.4.3"
+version = "0.4.4-DEV"
 
 [[ArgCheck]]
 git-tree-sha1 = "59c256cf71c3982484ae4486ee86a3d7da891dea"
