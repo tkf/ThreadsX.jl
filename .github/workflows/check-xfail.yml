@@ -1,0 +1,31 @@
+name: Check xfail
+
+on:
+  pull_request:
+
+jobs:
+  xfail:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        julia-version: ['^1']
+      fail-fast: false
+    name: Test xfail Julia ${{ matrix.julia-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: tkf/merge-xfail-branch@v1
+        id: merge-xfail-branch
+
+      - name: Setup julia
+        if: ${{ steps.merge-xfail-branch.outputs.need_xfail == 'yes' }}
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+
+      - run: julia -e 'using Pkg; pkg"add https://github.com/tkf/Run.jl"'
+        if: ${{ steps.merge-xfail-branch.outputs.need_xfail == 'yes' }}
+
+      - run: julia -e 'using Run; Run.test(project = "test/environments/main", xfail = true)'
+        if: ${{ steps.merge-xfail-branch.outputs.need_xfail == 'yes' }}
+        env:
+          JULIA_NUM_THREADS: '2'
