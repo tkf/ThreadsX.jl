@@ -14,8 +14,8 @@ SplittablesBase = "171d559e-b47b-412a-8079-5efa626c420e"
 Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 
 [compat]
-ArgCheck = "1.0, 2.0"
 BangBang = "0.3.17"
+ArgCheck = "1.0, 2.0"
 ConstructionBase = "0.1.0, 1.0"
 InitialValues = "0.2"
 Referenceables = "0.1"
