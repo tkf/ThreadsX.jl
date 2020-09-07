@@ -8,11 +8,11 @@ version = "0.3.3"
 
 [[Aqua]]
 deps = ["Pkg", "Test"]
-git-tree-sha1 = "bac58b993dda4d3bf10d986424b7d14be3b9afa7"
+git-tree-sha1 = "6d67e79e25749380439f1cb1bcdd926f2d6947c2"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaTesting/Aqua.jl.git"
 uuid = "4c88cf16-eb10-579e-8560-4a9242c79595"
-version = "0.4.5-DEV"
+version = "0.4.6-DEV"
 
 [[ArgCheck]]
 git-tree-sha1 = "dedbbb2ddb876f899585c4ec4433265e3017215a"
@@ -21,7 +21,7 @@ version = "2.1.0"
 
 [[BangBang]]
 deps = ["Compat", "ConstructionBase", "Future", "InitialValues", "LinearAlgebra", "Requires", "Setfield", "Tables", "ZygoteRules"]
-git-tree-sha1 = "2e5abd328ec4d3b7d4b620728a2c259043edd0e4"
+git-tree-sha1 = "ffa0f05f51a4f87535249131eafb163e006d17b8"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/BangBang.jl.git"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
@@ -280,11 +280,11 @@ version = "0.1.6-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "295e51328e2c4e090752884c543c0b8296d5d8a7"
+git-tree-sha1 = "8215fbb5991d408758bc92ff515fde4c522ec513"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
-version = "0.4.49-DEV"
+version = "0.4.51-DEV"
 
 [[UUIDs]]
 deps = ["Random", "SHA"]
