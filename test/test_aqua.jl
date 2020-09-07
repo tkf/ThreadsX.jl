@@ -12,6 +12,7 @@ Aqua.test_all(
     project_extras = true,
     stale_deps = true,
     deps_compat = true,
+    project_toml_formatting = true,
 )
 
 @testset "Method ambiguity" begin
