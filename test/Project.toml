@@ -7,5 +7,5 @@ Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-Aqua = "0.4.4"
+Aqua = "0.4.7"
 Documenter = "0.24"
