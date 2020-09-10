@@ -13,7 +13,7 @@ version = "2.1.0"
 
 [[BangBang]]
 deps = ["Compat", "ConstructionBase", "Future", "InitialValues", "LinearAlgebra", "Requires", "Setfield", "Tables", "ZygoteRules"]
-git-tree-sha1 = "f1fec31e154d6cea107e7674e619c173d957dd65"
+git-tree-sha1 = "6b11fa2168d5e78f0e595c84bc0d4ffc536a2125"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/BangBang.jl.git"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
@@ -142,9 +142,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[OnlineStats]]
 deps = ["AbstractTrees", "Dates", "LinearAlgebra", "OnlineStatsBase", "OrderedCollections", "Random", "RecipesBase", "Statistics", "StatsBase", "SweepOperator"]
-git-tree-sha1 = "e2ff600bfbc7c2549adbe66390c48ba007b6c467"
+git-tree-sha1 = "0c81176b2eeff0f6664e0155d5391b621232237c"
 uuid = "a15396b6-48d5-5d58-9928-6d29437db91e"
-version = "1.5.3"
+version = "1.5.5"
 
 [[OnlineStatsBase]]
 deps = ["AbstractTrees", "Dates", "LinearAlgebra", "OrderedCollections", "Statistics", "StatsBase"]
@@ -180,9 +180,9 @@ deps = ["Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[RecipesBase]]
-git-tree-sha1 = "58de8f7e33b7fda6ee39eff65169cd1e19d0c107"
+git-tree-sha1 = "6ee6c35fe69e79e17c455a386c1ccdc66d9f7da4"
 uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-version = "1.0.2"
+version = "1.1.0"
 
 [[Referenceables]]
 git-tree-sha1 = "4a32b1dd124a846580608eb347d4337f873c2499"
@@ -226,7 +226,7 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SplittablesBase]]
 deps = ["Setfield", "Test"]
-git-tree-sha1 = "f979149cb692c6212911d3e982d739cf19e09be2"
+git-tree-sha1 = "3f41fda7043ef64f2a4b7266889a9319a62fb8bb"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/SplittablesBase.jl.git"
 uuid = "171d559e-b47b-412a-8079-5efa626c420e"
@@ -272,7 +272,7 @@ version = "0.1.6-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "dd1e6a9f0ef2e9428eaf609bfb14a29f3422fb16"
+git-tree-sha1 = "45e1648018aebb16aa93270322e7f0e2156d5b15"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
