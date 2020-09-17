@@ -32,3 +32,12 @@ function ThreadsX.map!(f, dest, array, arrays...; kw...)
     end
     return dest
 end
+
+struct ConvertTo{T} end
+(::ConvertTo{T})(x) where {T} = convert(T, x)
+
+ThreadsX.collect(::Type{T}, itr; kwargs...) where {T} =
+    tcopy(Map(ConvertTo{T}()), Vector{T}, itr; basesize = default_basesize(itr), kwargs...)
+
+ThreadsX.collect(itr; kwargs...) =
+    tcollect(itr; basesize = default_basesize(itr), kwargs...)

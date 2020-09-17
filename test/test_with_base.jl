@@ -8,6 +8,10 @@ args_and_kwargs(args...; kwargs...) = args, (; kwargs...)
 inc(x) = x + 1
 
 raw_testdata = """
+collect(1:10)
+collect(Float64, 1:10)
+collect(inc(x) for x in 1:10)
+collect(Float64, (inc(x) for x in 1:10))
 map(inc, 1:10)
 map(inc, Float64[])
 map(inc, ones(3, 3))
