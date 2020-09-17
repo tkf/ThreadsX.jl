@@ -21,11 +21,11 @@ To find out functions supported by ThreadsX.jl, just type
 
 ``````julia
 julia> ThreadsX.
-MergeSort       any             findlast        mapreduce       sort
-QuickSort       count           foreach         maximum         sort!
-Set             extrema         issorted        minimum         sum
-StableQuickSort findall         map             prod            unique
-all             findfirst       map!            reduce
+MergeSort       any             findfirst       map!            reduce
+QuickSort       collect         findlast        mapreduce       sort
+Set             count           foreach         maximum         sort!
+StableQuickSort extrema         issorted        minimum         sum
+all             findall         map             prod            unique
 ``````
 
 ## Interoperability
