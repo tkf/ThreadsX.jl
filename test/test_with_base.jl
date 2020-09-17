@@ -1,5 +1,6 @@
 module TestWithBase
 
+using Base: splat
 using Test
 using ThreadsX
 
@@ -10,9 +11,14 @@ inc(x) = x + 1
 raw_testdata = """
 collect(1:10)
 collect(Float64, 1:10)
+collect(x for x in 1:10 if isodd(x))
+collect(Float64, (x for x in 1:10 if isodd(x)))
 collect(inc(x) for x in 1:10)
 collect(Float64, (inc(x) for x in 1:10))
+collect(x * y for x in 1:10, y in 11:20)
+collect(Float64, (x * y for x in 1:10, y in 11:20))
 map(inc, 1:10)
+map(inc, (x for x in 1:10 if isodd(x)))
 map(inc, Float64[])
 map(inc, ones(3, 3))
 map(inc, ones(3, 0))
@@ -21,6 +27,7 @@ map(*, 1:10, 11:20)
 map(*, ones(3, 3), ones(3, 3))
 map(*, ones(3, 0), ones(3, 0))
 map(*, ones(0, 3), ones(0, 3))
+map(splat(*), Iterators.product(1:10, 11:20))
 reduce(+, 1:10)
 reduce(+, 1:0)
 reduce(+, Bool[])
