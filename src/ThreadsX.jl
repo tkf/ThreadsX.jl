@@ -1,5 +1,6 @@
 baremodule ThreadsX
 
+function collect end
 function map end
 
 function mapreduce end
