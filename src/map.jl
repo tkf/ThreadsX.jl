@@ -6,7 +6,8 @@ __map(f, itrs...; kwargs...) =
 reshape_as(ys, xs) = reshape_as(ys, xs, IteratorSize(xs))
 reshape_as(ys, xs, ::IteratorSize) = ys
 reshape_as(ys, xs, ::HasShape) = reshape(ys, size(xs))
-reshape_as(::Empty{T}, xs, ::HasShape) where {T} = T(undef, size(xs)...)
+reshape_as(::Empty{T}, xs, isize::HasShape) where {T<:AbstractVector} =
+    reshape_as(T(undef, length(xs)), xs, isize)
 
 function _map(f, itr, itrs...; kwargs...)
     ys = __map(f, itr, itrs...; kwargs...)
