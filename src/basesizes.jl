@@ -1,3 +1,7 @@
+default_basesize(n::Integer) = max(1, cld(n, (8 * Threads.nthreads())))
+default_basesize(xs) =
+    default_basesize(SplittablesBase.amount(last(extract_transducer(xs))))
+
 default_basesize(_, _, xs) = default_basesize(xs::AbstractArray)
 
 # TODO: handle `Base.Fix2` etc.
