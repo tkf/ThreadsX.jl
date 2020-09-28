@@ -22,7 +22,7 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
-      - run: julia -e 'using Pkg; pkg"add https://github.com/tkf/Run.jl"'
+      - run: julia -e 'using Pkg; pkg"add Run@0.1"'
       - run: julia -e 'using Run; Run.prepare("test/environments/main")'
       - run: julia -e 'using Run; Run.test(project="test/environments/main")'
       - uses: julia-actions/julia-uploadcodecov@latest
