@@ -1,5 +1,6 @@
 baremodule ThreadsX
 
+function collect end
 function map end
 
 function mapreduce end
@@ -37,7 +38,8 @@ module Implementations
 import SplittablesBase
 using ArgCheck: @argcheck, @check
 using BangBang: SingletonVector, append!!, push!!, union!!
-using Base: Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
+using Base:
+    HasShape, IteratorSize, Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
 using ConstructionBase: setproperties
 using InitialValues: asmonoid
 using Referenceables: referenceable

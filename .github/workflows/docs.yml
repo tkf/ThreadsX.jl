@@ -16,7 +16,7 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.4
-      - run: julia -e 'using Pkg; pkg"add https://github.com/tkf/Run.jl"'
+      - run: julia -e 'using Pkg; pkg"add Run@0.1"'
       - run: julia -e 'using Run; Run.prepare_docs()'
       - run: julia -e 'using Run; Run.docs()'
         env:
