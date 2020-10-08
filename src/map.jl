@@ -49,3 +49,14 @@ ThreadsX.collect(::Type{T}, itr; kwargs...) where {T} = reshape_as(
 
 ThreadsX.collect(itr; kwargs...) =
     reshape_as(tcollect(itr; basesize = default_basesize(itr), kwargs...), itr)
+
+
+ThreadsX.mapi(f, itr; kwargs...) =
+    itr |>
+    NondeterministicThreading(; kwargs...) |>
+    Map(f) |>
+    Map(SingletonVector) |>
+    foldxl(append!!; init = EmptyVector())
+
+ThreadsX.mapi(f, itr1, itrs...; kwargs...) =
+    ThreadsX.mapi(Base.splat(f), zip(itr1, itrs...); kwargs...)

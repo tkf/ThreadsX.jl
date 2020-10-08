@@ -2,6 +2,7 @@ baremodule ThreadsX
 
 function collect end
 function map end
+function mapi end
 
 function mapreduce end
 function reduce end
@@ -42,6 +43,7 @@ using Base:
     HasShape, IteratorSize, Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
 using ConstructionBase: setproperties
 using InitialValues: asmonoid
+using MicroCollections: EmptyVector
 using Referenceables: referenceable
 using Setfield: @set
 using Transducers:
@@ -51,10 +53,12 @@ using Transducers:
     Init,
     Map,
     MapSplat,
+    NondeterministicThreading,
     OnInit,
     ReduceIf,
     Transducers,
     extract_transducer,
+    foldxl,
     opcompose,
     reduced,
     right,
