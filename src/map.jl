@@ -51,12 +51,14 @@ ThreadsX.collect(itr; kwargs...) =
     reshape_as(tcollect(itr; basesize = default_basesize(itr), kwargs...), itr)
 
 
-ThreadsX.mapi(f, itr; kwargs...) =
+ThreadsX.mapi(f, itr; kwargs...) = reshape_as(
     itr |>
     NondeterministicThreading(; kwargs...) |>
     Map(f) |>
     Map(SingletonVector) |>
-    foldxl(append!!; init = EmptyVector())
+    foldxl(append!!; init = EmptyVector()),
+    itr,
+)
 
 ThreadsX.mapi(f, itr1, itrs...; kwargs...) =
     ThreadsX.mapi(Base.splat(f), zip(itr1, itrs...); kwargs...)
