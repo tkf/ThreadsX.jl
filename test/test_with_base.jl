@@ -8,6 +8,8 @@ args_and_kwargs(args...; kwargs...) = args, (; kwargs...)
 
 inc(x) = x + 1
 
+mapi(args...) = map(args...)
+
 raw_testdata = """
 collect(1:10)
 collect(Float64, 1:10)
@@ -103,12 +105,17 @@ Set(x^2 for x in [1, -1, -3, 4, 3])
 """
 
 # An array of `(label, (f, args, kwargs))`
-testdata = map(split(raw_testdata, "\n", keepempty = false)) do x
+testdata = mapreduce(vcat, split(raw_testdata, "\n", keepempty = false)) do x
     @debug "Parsing: $x"
     f, rest = split(x, "(", limit = 2)
     ex = Meta.parse("DUMMY($rest")
     ex.args[1] = args_and_kwargs
-    @eval ($x, ($(Symbol(f)), $ex...))
+    tests = Any[@eval ($x, ($(Symbol(f)), $ex...))]
+    if f == "map"
+        y = replace(x, r"^map" => "mapi")
+        push!(tests, @eval ($y, (mapi, $ex...)))
+    end
+    return tests
 end
 
 @testset "$label" for (label, (f, args, kwargs)) in testdata
