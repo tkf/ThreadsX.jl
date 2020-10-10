@@ -137,6 +137,12 @@ version = "0.5.5"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
+[[MicroCollections]]
+deps = ["BangBang", "Setfield"]
+git-tree-sha1 = "e991b6a9d38091c4a0d7cd051fcb57c05f98ac03"
+uuid = "128add7d-3638-4c79-886c-908ea0c25c34"
+version = "0.1.0"
+
 [[Missings]]
 deps = ["DataAPI"]
 git-tree-sha1 = "ed61674a0864832495ffe0a7e889c0da76b0f4c8"
@@ -271,18 +277,18 @@ deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[ThreadsX]]
-deps = ["ArgCheck", "BangBang", "ConstructionBase", "InitialValues", "Referenceables", "Setfield", "SplittablesBase", "Transducers"]
+deps = ["ArgCheck", "BangBang", "ConstructionBase", "InitialValues", "MicroCollections", "Referenceables", "Setfield", "SplittablesBase", "Transducers"]
 path = "../../.."
 uuid = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
-version = "0.1.7-DEV"
+version = "0.1.8-DEV"
 
 [[Transducers]]
-deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "d2c84cd1910cda0ba26971953526569a54f7234b"
+deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "MicroCollections", "Requires", "Setfield", "SplittablesBase", "Tables"]
+git-tree-sha1 = "9968acd363ba60e5e85a262ef43407f2ed2c6204"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
-version = "0.4.52-DEV"
+version = "0.4.53-DEV"
 
 [[UUIDs]]
 deps = ["Random", "SHA"]
