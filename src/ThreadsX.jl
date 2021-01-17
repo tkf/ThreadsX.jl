@@ -48,6 +48,7 @@ using Referenceables: referenceable
 using Setfield: @set
 using Transducers:
     Cat,
+    Consecutive,
     Empty,
     Filter,
     Init,
