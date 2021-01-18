@@ -59,9 +59,9 @@ deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[DefineSingletons]]
-git-tree-sha1 = "1a356f194281dff9ef1119faa9125a0d4e210729"
+git-tree-sha1 = "77b4ca280084423b728662fe040e5ff8819347c5"
 uuid = "244e2a9f-e319-4986-a169-4d1fe445cd52"
-version = "0.1.0"
+version = "0.1.1"
 
 [[DelimitedFiles]]
 deps = ["Mmap"]
@@ -238,11 +238,11 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SplittablesBase]]
 deps = ["Setfield", "Test"]
-git-tree-sha1 = "eb880df5b12bcae91f663ca49af963e3f90dc1ab"
+git-tree-sha1 = "99241436bde2e0a3b20388d2867859fddff7e44e"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/SplittablesBase.jl.git"
 uuid = "171d559e-b47b-412a-8079-5efa626c420e"
-version = "0.1.11-DEV"
+version = "0.1.12-DEV"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
@@ -284,7 +284,7 @@ version = "0.1.8-DEV"
 
 [[Transducers]]
 deps = ["ArgCheck", "BangBang", "CompositionsBase", "DefineSingletons", "Distributed", "InitialValues", "Logging", "Markdown", "MicroCollections", "Requires", "Setfield", "SplittablesBase", "Tables"]
-git-tree-sha1 = "5fce3dc4484bb1e657353e8381ddd87557d6c6bd"
+git-tree-sha1 = "59c43de7bfbc2f07b40c5b6d6708cb93b251c5ec"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaFolds/Transducers.jl.git"
 uuid = "28d57a85-8fef-5791-bfe6-a80928e7c999"
