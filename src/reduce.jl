@@ -143,16 +143,29 @@ ThreadsX.issorted(
     kw...,
 ) = ThreadsX.issorted(itr, Base.ord(lt, by, rev, order); kw...)
 
-ThreadsX.issorted(itr, order::Base.Ordering; kw...) =
+function make_geq(order)
+    geq((x1, x2),) = !Base.lt(order, x2, x1)
+    return geq
+end
+
+# TODO: Benchmark it with `Consecutive` version and drop this method
+# if the speed is comparable.
+ThreadsX.issorted(itr::AbstractArray, order::Base.Ordering; kw...) =
     ThreadsX.all(
+        make_geq(order),
         zip(
             view(itr, firstindex(itr):lastindex(itr)-1),
             view(itr, firstindex(itr)+1:lastindex(itr)),
         );
         kw...,
-    ) do (x1, x2)
-        !Base.lt(order, x2, x1)
-    end
+    )
+
+ThreadsX.issorted(itr, order::Base.Ordering; kw...) =
+    ThreadsX.all(
+        make_geq(order),
+        itr |> Consecutive(Val(2), Val(1));
+        kw...,
+    )
 
 struct PushUnique{F} <: Function
     f::F
