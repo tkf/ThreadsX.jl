@@ -101,9 +101,9 @@ version = "0.8.5"
 
 [[Documenter]]
 deps = ["ANSIColoredPrinters", "Base64", "Dates", "DocStringExtensions", "IOCapture", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
-git-tree-sha1 = "d8bd21fdac4152955040b47a72aa273880662f26"
+git-tree-sha1 = "769275a95354ef52e5f4b00814249da73d53869e"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-version = "0.27.8"
+version = "0.27.9"
 
 [[Future]]
 deps = ["Random"]
