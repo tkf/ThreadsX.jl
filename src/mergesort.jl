@@ -113,16 +113,15 @@ function _mergesort!(xs, alg, order, tmp)
     left, right = halve(xs)
     left_tmp, right_tmp = halve(tmp)
     @sync begin
-        @spawn _mergesort!(left, alg, order, left_tmp)
+        @spawn begin
+            _mergesort!(left, alg, order, left_tmp)
+            _copyto!(left_tmp, left)
+        end
         _mergesort!(right, alg, order, right_tmp)
+        _copyto!(right_tmp, right)
+        # TODO: don't copy `xs` to `tmp` for each recursion
     end
-    mergesorted!(
-        xs,
-        _copyto!(left_tmp, left),
-        _copyto!(right_tmp, right),
-        order,
-        alg.basesize,
-    )
+    mergesorted!(xs, left_tmp, right_tmp, order, alg.basesize)
     return xs
 end
 
