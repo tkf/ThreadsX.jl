@@ -42,11 +42,11 @@ _median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
 )
 
 function maptasks(f, xs)
-    tasks = Task[]
-    @sync for x in xs
-        push!(tasks, @spawn f(x))
+    ys = Vector{Any}(undef, length(xs))
+    @sync for (i, x) in enumerate(xs)
+        @spawn ys[i] = f(x)
     end
-    return map(fetch, tasks)
+    return ys
 end
 
 function exclusive_cumsum!(xs, acc = zero(eltype(xs)))
