@@ -20,7 +20,8 @@ function Base.sort!(
     if a.smallsize === nothing
         a = @set a.smallsize = a.basesize
     end
-    _mergesort!(view(v, lo:hi), a, o)
+    xs = view(v, lo:hi)
+    _mergesort!(xs, a, o, similar(xs))
     return v
 end
 
@@ -103,13 +104,14 @@ function halveat(arr::AbstractArray, i)
     return (left, right)
 end
 
-function _mergesort!(xs, alg, order, tmp = nothing)
+function _mergesort!(xs, alg, order, tmp)
     if length(xs) <= alg.smallsize
         sort!(xs, alg.smallsort, order)
         return xs
     end
+    @assert length(xs) == length(tmp)
     left, right = halve(xs)
-    left_tmp, right_tmp = halve(tmp === nothing ? similar(xs) : tmp)
+    left_tmp, right_tmp = halve(tmp)
     @sync begin
         @spawn _mergesort!(left, alg, order, left_tmp)
         _mergesort!(right, alg, order, right_tmp)
