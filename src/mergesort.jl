@@ -40,10 +40,10 @@ function mergesorted!(dest, left, right, order, basesize)
     # length(c) > 0 && length(b) > 0 && @assert Base.lt(order, last(c), first(b))  # stable sort
     ac, bd = halve(dest, length(a) + length(c))
     @sync begin
-        let ac = ac, c = c, a = a
-            @spawn mergesorted!(ac, a, c, order, basesize)
+        let bd = bd, b = b, d = d
+            @spawn  mergesorted!(bd, b, d, order, basesize)
         end
-        mergesorted!(bd, b, d, order, basesize)
+        mergesorted!(ac, a, c, order, basesize)
     end
     return dest
 end
@@ -114,11 +114,11 @@ function _mergesort!(xs, alg, order, tmp)
     left_tmp, right_tmp = halve(tmp)
     @sync begin
         @spawn begin
-            _mergesort!(left, alg, order, left_tmp)
-            _copyto!(left_tmp, left)
+            _mergesort!(right, alg, order, right_tmp)
+            _copyto!(right_tmp, right)
         end
-        _mergesort!(right, alg, order, right_tmp)
-        _copyto!(right_tmp, right)
+        _mergesort!(left, alg, order, left_tmp)
+        _copyto!(left_tmp, left)
         # TODO: don't copy `xs` to `tmp` for each recursion
     end
     mergesorted!(xs, left_tmp, right_tmp, order, alg.basesize)
