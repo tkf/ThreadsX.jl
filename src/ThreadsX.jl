@@ -66,11 +66,10 @@ using Transducers:
     tcopy
 using ..ThreadsX
 
-@static if VERSION >= v"1.3-alpha"
-    using Base.Threads: @spawn
+if isdefined(Base.Experimental, :Tapir)
+    using Base.Experimental.Tapir: @sync, @spawn
 else
-    # Mock `@spawn` using `@async`:
-    @eval const $(Symbol("@spawn")) = $(Symbol("@async"))
+    using Base.Threads: @sync, @spawn
 end
 
 if isdefined(Transducers, :foldxt)

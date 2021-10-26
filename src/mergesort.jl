@@ -38,11 +38,12 @@ function mergesorted!(dest, left, right, order, basesize)
     end
     # length(c) > 0 && length(b) > 0 && @assert Base.lt(order, last(c), first(b))  # stable sort
     ac, bd = halve(dest, length(a) + length(c))
-    task = let ac = ac, c = c, a = a
-        @spawn mergesorted!(ac, a, c, order, basesize)
+    @sync begin
+        let ac = ac, c = c, a = a
+            @spawn mergesorted!(ac, a, c, order, basesize)
+        end
+        mergesorted!(bd, b, d, order, basesize)
     end
-    mergesorted!(bd, b, d, order, basesize)
-    wait(task)
     return dest
 end
 
@@ -109,9 +110,10 @@ function _mergesort!(xs, alg, order, tmp = nothing)
     end
     left, right = halve(xs)
     left_tmp, right_tmp = halve(tmp === nothing ? similar(xs) : tmp)
-    task = @spawn _mergesort!(left, alg, order, left_tmp)
-    _mergesort!(right, alg, order, right_tmp)
-    wait(task)
+    @sync begin
+        @spawn _mergesort!(left, alg, order, left_tmp)
+        _mergesort!(right, alg, order, right_tmp)
+    end
     mergesorted!(
         xs,
         _copyto!(left_tmp, left),
