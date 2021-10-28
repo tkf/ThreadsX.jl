@@ -70,7 +70,12 @@ function _quicksort!(
     # first pass.
 
     # Compute sizes of each partition for each chunks.
-    chunks = zip(_partition(xs, alg.basesize), _partition(cs, alg.basesize))
+
+    # Split the input into at most `nthreads` parts since there's no recursion
+    # in `partition_sizes!` to benefit from constructive cache sharing:
+    chunksize = max(alg.basesize, cld(length(xs), Threads.nthreads()))
+
+    chunks = zip(_partition(xs, chunksize), _partition(cs, chunksize))
     results = maptasks(partition_sizes!(pivot, order), chunks)
     nbelows::Vector{Int} = map(first, results)
     nequals::Vector{Int} = map(last, results)
