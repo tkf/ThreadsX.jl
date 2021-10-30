@@ -22,6 +22,15 @@ __verify_simd_flag(_, simd) =
 
 verify_simd_flag(simd) = __verify_simd_flag(_asval(simd), simd)
 
+# TODO: handle Union
+function elsizeof(::Type{T}) where {T}
+    if Base.allocatedinline(Some{T})
+        return sizeof(Some{T})
+    else
+        return sizeof(Ptr{Any})
+    end
+end
+
 function _median(order, (a, b, c)::NTuple{3,Any})
     # Sort `(a, b, c)`:
     if Base.lt(order, b, a)
