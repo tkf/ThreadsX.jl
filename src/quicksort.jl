@@ -120,31 +120,15 @@ function _quicksort!(
         end
     end
 
-    partitions = (1:equal_offsets[1], above_offsets[1]+1:length(xs))
+    function recurse(idx)
+        local ys_new = view(ys, idx)
+        local cs_new = view(cs, idx)
+        local zs = mutable_xs ? view(xs, idx) : similar(ys_new)
+        _quicksort!(zs, ys_new, alg, order, cs_new, !ys_is_result, true)
+    end
     @sync begin
-        for idx in partitions
-            length(idx) <= alg.smallsize && continue
-            ys_new = view(ys, idx)
-            xs_new = view(xs, idx)
-            cs_new = view(cs, idx)
-            @spawn let zs
-                if mutable_xs
-                    zs = xs_new
-                else
-                    zs = similar(ys_new)
-                end
-                _quicksort!(zs, ys_new, alg, order, cs_new, !ys_is_result, true)
-            end
-        end
-        for idx in partitions
-            length(idx) <= alg.smallsize || continue
-            if ys_is_result
-                ys_new = view(ys, idx)
-            else
-                ys_new = copyto!(view(xs, idx), view(ys, idx))
-            end
-            sort!(ys_new, alg.smallsort, order)
-        end
+        @spawn recurse(above_offsets[1]+1:length(xs))
+        recurse(1:equal_offsets[1])
         if !ys_is_result
             let idx = equal_offsets[1]+1:above_offsets[1]
                 copyto!(view(xs, idx), view(ys, idx))
