@@ -1,3 +1,9 @@
+@static if VERSION >= v"1.8"
+    @eval const $(Symbol("@_inline_meta")) = $(Symbol("@inline"))
+else
+    using Base: @_inline_meta
+end
+
 function adhoc_partition(xs, n)
     @check firstindex(xs) == 1
     m = cld(length(xs), n)
