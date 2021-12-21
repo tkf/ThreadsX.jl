@@ -31,6 +31,8 @@ function Set end
 
 function foreach end
 function map! end
+function copy! end
+function copyto! end
 
 function sort end
 function sort! end
@@ -85,6 +87,7 @@ include("basesizes.jl")
 include("reduce.jl")
 include("foreach.jl")
 include("map.jl")
+include("copy.jl")
 include("mergesort.jl")
 include("quicksort.jl")
 include("countingsort.jl")
