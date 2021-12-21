@@ -82,6 +82,7 @@ else
     foldxt(rf, xs; kw...) = reduce(rf, Map(identity), xs; kw...)
 end
 
+include("debug.jl")
 include("utils.jl")
 include("basesizes.jl")
 include("reduce.jl")
