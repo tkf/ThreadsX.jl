@@ -4,6 +4,10 @@ Base.@kwdef struct ParallelQuickSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortA
     basesize::BaseSize = 10_000
 end
 # `basesize` is tuned using `Float64`.  Make it `eltype`-aware?
+#
+# Note: Small `smallsize` (e.g., 32) is beneficial on random data. However, it
+# is slower on sorted data with small number of worker threads.
+# TODO: Implement some heuristics for `smallsize`.
 
 function Base.sort!(
     v::AbstractVector,
@@ -41,13 +45,8 @@ function _quicksort!(
     mutable_xs = false,
 )
     @check length(ys) == length(xs)
-    if length(ys) <= max(8, alg.smallsize)
-        if ys_is_result
-            zs = copyto!(ys, xs)
-        else
-            zs = xs
-        end
-        return sort!(zs, alg.smallsort, order)
+    if length(ys) <= max(8, alg.basesize)
+        return _quicksort_serial!(ys, xs, alg, order, cs, ys_is_result, mutable_xs)
     end
     pivot = _median(
         order,
@@ -149,6 +148,78 @@ function _quicksort!(
             let idx = equal_offsets[1]+1:above_offsets[1]
                 copyto!(view(xs, idx), view(ys, idx))
             end
+        end
+    end
+
+    return ys_is_result ? ys : xs
+end
+
+function _quicksort_serial!(
+    ys,
+    xs,
+    alg,
+    order,
+    cs = Vector{Int8}(undef, length(ys)),
+    ys_is_result = true,
+    mutable_xs = false,
+)
+    # @check length(ys) == length(xs)
+    if length(ys) <= max(8, alg.smallsize)
+        if ys_is_result
+            zs = copyto!(ys, xs)
+        else
+            zs = xs
+        end
+        return sort!(zs, alg.smallsort, order)
+    end
+    pivot = _median(
+        order,
+        (
+            xs[1],
+            xs[end÷8],
+            xs[end÷4],
+            xs[3*(end÷8)],
+            xs[end÷2],
+            xs[5*(end÷8)],
+            xs[3*(end÷4)],
+            xs[7*(end÷8)],
+            xs[end],
+        ),
+    )
+
+    (nbelows, nequals) = partition_sizes!(xs, cs, pivot, order)
+    if nequals == length(xs)
+        if ys_is_result
+            copyto!(ys, xs)
+            return ys
+        else
+            return xs
+        end
+    end
+    @assert nequals > 0
+    below_offset = 0
+    equal_offset = nbelows
+    above_offset = nbelows + nequals
+    unsafe_quicksort_scatter!(ys, xs, cs, below_offset, equal_offset, above_offset)
+
+    below = 1:equal_offset
+    above = above_offset+1:length(xs)
+    ya = view(ys, above)
+    yb = view(ys, below)
+    ca = view(cs, above)
+    cb = view(cs, below)
+    if mutable_xs
+        _quicksort_serial!(view(xs, above), ya, alg, order, ca, !ys_is_result, true)
+        _quicksort_serial!(view(xs, below), yb, alg, order, cb, !ys_is_result, true)
+    else
+        let zs = similar(ys)
+            _quicksort_serial!(view(zs, above), ya, alg, order, ca, !ys_is_result, true)
+            _quicksort_serial!(view(zs, below), yb, alg, order, cb, !ys_is_result, true)
+        end
+    end
+    if !ys_is_result
+        let idx = equal_offset+1:above_offset
+            copyto!(view(xs, idx), view(ys, idx))
         end
     end
 
