@@ -45,12 +45,16 @@ function choose_pivot(xs, order)
     )
 end
 
-function _quicksort!(ys, xs, alg, order)
+function _quicksort!(ys, xs, alg, order, givenpivot = nothing)
     @check length(ys) == length(xs)
     if length(ys) <= max(8, alg.basesize)
         return _quicksort_serial!(ys, xs, alg, order)
     end
-    pivot = choose_pivot(ys, order)
+    pivot = if givenpivot === nothing
+        choose_pivot(ys, order)
+    else
+        something(givenpivot)
+    end
     chunksize = alg.basesize
 
     # TODO: Calculate extrema during the first pass if it's possible
@@ -89,9 +93,12 @@ function _quicksort!(ys, xs, alg, order)
     @check acc == length(xs)
 
     total_nbelows = above_offsets[1]
-    total_nbelows == 0 && return sort!(ys, alg.smallsort, order)
-    # TODO: Fallback to parallel mergesort? Scan the array to check degeneracy
-    # and also to estimate a good pivot?
+    if total_nbelows == 0
+        @assert givenpivot === nothing
+        betterpivot, ishomogenous = refine_pivot(ys, pivot, alg.basesize, order)
+        ishomogenous && return ys
+        return _quicksort!(ys, xs, alg, order, Some(betterpivot))
+    end
 
     # (2) `quicksort_copyback!` -- Copy partitions back to the original
     # (destination) array `ys` in the natural order
@@ -153,3 +160,69 @@ function quicksort_copyback!(ys, xs_chunk, nbelows, below_offset, above_offset)
         @inbounds ys[above_offset+i] = xs_chunk[end-i+1]
     end
 end
+
+"""
+    refine_pivot(ys, badpivot::T, basesize, order) -> (pivot::T, ishomogenous::Bool)
+
+Iterate over `ys` for refining `badpivot` and checking if all elements in `ys`
+are `order`-equal to `badpivot` (i.e., it is impossible to refine `badpivot`).
+
+Return a value `pivot` in `ys` and a boolean `ishomogenous` indicating if `pivot`
+is not `order`-greater than `badpivot`.
+
+Given the precondition:
+
+    badpivot ∈ ys
+    all(!(y < badpivot) for y in ys)  # i.e., total_nbelows == 0
+
+`ishomogenous` implies all elements in `ys` are `order`-equal to `badpivot` and
+`pivot` is better than `badpivot` if and only if `!ishomogenous`.
+"""
+function refine_pivot(ys, badpivot, basesize, order)
+    chunksize = max(basesize, cld(length(ys), Threads.nthreads()))
+    nchunks = cld(length(ys), chunksize)
+    nchunks == 1 && return refine_pivot_serial(ys, badpivot, order)
+    ishomogenous = Vector{Bool}(undef, nchunks)
+    pivots = Vector{eltype(ys)}(undef, nchunks)
+    @sync for (i, ys_chunk) in enumerate(_partition(ys, chunksize))
+        @spawn (pivots[i], ishomogenous[i]) = refine_pivot_serial(ys_chunk, badpivot, order)
+    end
+    allishomogenous = all(ishomogenous)
+    allishomogenous && return (badpivot, true)
+    @DBG for (i, p) in pairs(pivots)
+        ishomogenous[i] && @check eq(order, p, badpivot)
+    end
+    # Find the smallest `pivot` that is not `badpivot`. Assuming that there are
+    # a lot of `badpivot` entries, this is perhaps better than using the median
+    # of `pivots`.
+    i0 = findfirst(!, ishomogenous)
+    goodpivot = pivots[i0]
+    for i in i0+1:nchunks
+        if @inbounds !ishomogenous[i]
+            p = @inbounds pivots[i]
+            if Base.lt(order, p, goodpivot)
+                goodpivot = p
+            end
+        end
+    end
+    return (goodpivot, false)
+end
+
+function refine_pivot_serial(ys, badpivot, order)
+    for y in ys
+        if Base.lt(order, badpivot, y)
+            return (y, false)
+        else
+            # Since `refine_pivot` is called only if `total_nbelows == 0` and
+            # `y1` is the bad pivot, we have:
+            @DBG @check !Base.lt(order, y, badpivot)  # i.e., y == y1
+        end
+    end
+    return (badpivot, true)
+end
+# TODO: online median approximation
+# TODO: Check if the homogeneity check can be done in `quicksort_partition!`
+#       without overall performance degradation? Use it to determine the pivot
+#       for the next recursion.
+# TODO: Do this right after `choose_pivot` if it finds out that all samples are
+#       equivalent?

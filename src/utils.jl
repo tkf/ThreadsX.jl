@@ -37,6 +37,8 @@ function elsizeof(::Type{T}) where {T}
     end
 end
 
+eq(order, a, b) = !(Base.lt(order, a, b) || Base.lt(order, b, a))
+
 function _median(order, (a, b, c)::NTuple{3,Any})
     # Sort `(a, b, c)`:
     if Base.lt(order, b, a)
