@@ -60,7 +60,7 @@ function _quicksort!(ys, xs, alg, order, givenpivot = nothing)
     # TODO: Calculate extrema during the first pass if it's possible
     # to use counting sort.
 
-    # (1) `quicksort_partition!` -- partition each chunk in parallel
+    # (1) `quicksort_partition!` -- Partition each chunk in parallel.
     xs_chunk_list = _partition(xs, chunksize)
     ys_chunk_list = _partition(ys, chunksize)
     nchunks = cld(length(xs), chunksize)
@@ -101,14 +101,14 @@ function _quicksort!(ys, xs, alg, order, givenpivot = nothing)
     end
 
     # (2) `quicksort_copyback!` -- Copy partitions back to the original
-    # (destination) array `ys` in the natural order
+    # (destination) array `ys` in the natural order.
     @sync for (i, (xs_chunk, below_offset, above_offset)) in
               enumerate(zip(xs_chunk_list, below_offsets, above_offsets))
         local nb = get(below_offsets, i + 1, total_nbelows) - below_offsets[i]
         @spawn quicksort_copyback!(ys, xs_chunk, nb, below_offset, above_offset)
     end
 
-    # (3) Recursively sort each partion
+    # (3) Recursively sort each partion.
     below = 1:total_nbelows
     above = total_nbelows+1:length(xs)
     @sync begin
