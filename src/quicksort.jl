@@ -205,6 +205,7 @@ function refine_pivot(ys, badpivot, basesize, order)
             end
         end
     end
+    error("reached: (goodpivot, false)")
     return (goodpivot, false)
 end
 
