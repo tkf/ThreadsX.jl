@@ -37,9 +37,9 @@ function elsizeof(::Type{T}) where {T}
     end
 end
 
-eq(order, a, b) = !(Base.lt(order, a, b) || Base.lt(order, b, a))
+@inline eq(order, a, b) = !(Base.lt(order, a, b) || Base.lt(order, b, a))
 
-function _median(order, (a, b, c)::NTuple{3,Any})
+@inline function _median(order, (a, b, c)::NTuple{3,Any})
     # Sort `(a, b, c)`:
     if Base.lt(order, b, a)
         a, b = b, a
@@ -53,7 +53,7 @@ function _median(order, (a, b, c)::NTuple{3,Any})
     return b
 end
 
-_median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
+@inline _median(order, (a, b, c, d, e, f, g, h, i)::NTuple{9,Any}) = _median(
     order,
     (_median(order, (a, b, c)), _median(order, (d, e, f)), _median(order, (g, h, i))),
 )
