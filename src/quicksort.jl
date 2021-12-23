@@ -182,12 +182,10 @@ function choose_pivot(xs, basesize, order)
         eq(order, samples[7], samples[8]) &&
         eq(order, samples[8], samples[9])
     )
-        pivot, ishomogenous =
-            refine_pivot_serial(@view(xs[begin:min(end, begin + 127)]), pivot, order)
+        pivot, ishomogenous = refine_pivot_serial(@view(xs[1:min(end, 128)]), pivot, order)
         if ishomogenous
             length(xs) <= 128 && return (pivot, true, true)
-            pivot, ishomogenous =
-                refine_pivot(@view(xs[begin+128:end]), pivot, basesize, order)
+            pivot, ishomogenous = refine_pivot(@view(xs[129:end]), pivot, basesize, order)
             return (pivot, ishomogenous, true)
         end
     end
