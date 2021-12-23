@@ -28,30 +28,18 @@ function Base.sort!(
     return v
 end
 
-function choose_pivot(xs, order)
-    return _median(
-        order,
-        (
-            xs[1],
-            xs[end÷8],
-            xs[end÷4],
-            xs[3*(end÷8)],
-            xs[end÷2],
-            xs[5*(end÷8)],
-            xs[3*(end÷4)],
-            xs[7*(end÷8)],
-            xs[end],
-        ),
-    )
-end
-
 function _quicksort!(ys, xs, alg, order, givenpivot = nothing)
     @check length(ys) == length(xs)
     if length(ys) <= max(8, alg.basesize)
         return _quicksort_serial!(ys, xs, alg, order)
     end
+    isrefined = false
     pivot = if givenpivot === nothing
-        choose_pivot(ys, order)
+        let pivot, ishomogenous
+            pivot, ishomogenous, isrefined = choose_pivot(ys, alg.basesize, order)
+            ishomogenous && return ys
+            pivot
+        end
     else
         something(givenpivot)
     end
@@ -95,6 +83,7 @@ function _quicksort!(ys, xs, alg, order, givenpivot = nothing)
     total_nbelows = above_offsets[1]
     if total_nbelows == 0
         @assert givenpivot === nothing
+        @assert !isrefined
         betterpivot, ishomogenous = refine_pivot(ys, pivot, alg.basesize, order)
         ishomogenous && return ys
         return _quicksort!(ys, xs, alg, order, Some(betterpivot))
@@ -124,7 +113,7 @@ function _quicksort_serial!(ys, xs, alg, order)
     if length(ys) <= max(8, alg.smallsize)
         return sort!(ys, alg.smallsort, order)
     end
-    pivot = choose_pivot(ys, order)
+    _, pivot = samples_and_pivot(ys, order)
 
     nbelows, naboves = quicksort_partition!(xs, ys, pivot, order)
     @DBG @check nbelows + naboves == length(xs)
@@ -159,6 +148,48 @@ function quicksort_copyback!(ys, xs_chunk, nbelows, below_offset, above_offset)
     @simd ivdep for i in 1:length(xs_chunk)-nbelows
         @inbounds ys[above_offset+i] = xs_chunk[end-i+1]
     end
+end
+
+@inline function samples_and_pivot(xs, order)
+    samples = (
+        xs[1],
+        xs[end÷8],
+        xs[end÷4],
+        xs[3*(end÷8)],
+        xs[end÷2],
+        xs[5*(end÷8)],
+        xs[3*(end÷4)],
+        xs[7*(end÷8)],
+        xs[end],
+    )
+    pivot = _median(order, samples)
+    return samples, pivot
+end
+
+"""
+    choose_pivot(xs, basesize, order) -> (pivot, ishomogenous::Bool, isrefined::Bool)
+"""
+function choose_pivot(xs, basesize, order)
+    samples, pivot = samples_and_pivot(xs, order)
+    if (
+        eq(order, samples[1], pivot) &&
+        eq(order, samples[1], samples[2]) &&
+        eq(order, samples[2], samples[3]) &&
+        eq(order, samples[3], samples[4]) &&
+        eq(order, samples[4], samples[5]) &&
+        eq(order, samples[5], samples[6]) &&
+        eq(order, samples[6], samples[7]) &&
+        eq(order, samples[7], samples[8]) &&
+        eq(order, samples[8], samples[9])
+    )
+        pivot, ishomogenous = refine_pivot_serial(@view(xs[1:min(end, 128)]), pivot, order)
+        if ishomogenous
+            length(xs) <= 128 && return (pivot, true, true)
+            pivot, ishomogenous = refine_pivot(@view(xs[129:end]), pivot, basesize, order)
+            return (pivot, ishomogenous, true)
+        end
+    end
+    return (pivot, false, false)
 end
 
 """
@@ -224,5 +255,3 @@ end
 # TODO: Check if the homogeneity check can be done in `quicksort_partition!`
 #       without overall performance degradation? Use it to determine the pivot
 #       for the next recursion.
-# TODO: Do this right after `choose_pivot` if it finds out that all samples are
-#       equivalent?

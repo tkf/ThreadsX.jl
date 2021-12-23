@@ -19,10 +19,12 @@ using ThreadsX.Implementations: refine_pivot
     end
 end
 
+divby(x) = Base.Fix2(÷, x)
+
 @testset "stable sort" begin
     @testset for alg in [ThreadsX.MergeSort, ThreadsX.StableQuickSort]
-        @test ThreadsX.sort(1:45; alg = alg, basesize = 25, by = _ -> 1) == 1:45
-        @test ThreadsX.sort(1:1000; alg = alg, basesize = 200, by = _ -> 1) == 1:1000
+        @test ThreadsX.sort(1:45; alg = alg, basesize = 25, by = divby(2)) == 1:45
+        @test ThreadsX.sort(1:1000; alg = alg, basesize = 200, by = divby(2)) == 1:1000
     end
 end
 
