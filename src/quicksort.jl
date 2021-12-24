@@ -4,6 +4,10 @@ Base.@kwdef struct ParallelQuickSortAlg{Alg,SmallSize,BaseSize} <: ParallelSortA
     basesize::BaseSize = 10_000
 end
 # `basesize` is tuned using `Float64`.  Make it `eltype`-aware?
+#
+# Note: Small `smallsize` (e.g., 32) is beneficial on random data. However, it
+# is slower on sorted data with small number of worker threads.
+# TODO: Implement some heuristics for `smallsize`.
 
 function Base.sort!(
     v::AbstractVector,
@@ -41,13 +45,8 @@ function _quicksort!(
     mutable_xs = false,
 )
     @check length(ys) == length(xs)
-    if length(ys) <= max(8, alg.smallsize)
-        if ys_is_result
-            zs = copyto!(ys, xs)
-        else
-            zs = xs
-        end
-        return sort!(zs, alg.smallsort, order)
+    if length(ys) <= max(8, alg.basesize)
+        return _quicksort_serial!(ys, xs, alg, order, cs, ys_is_result, mutable_xs)
     end
     pivot = _median(
         order,
@@ -63,6 +62,7 @@ function _quicksort!(
             xs[end],
         ),
     )
+    chunksize = alg.basesize
 
     # TODO: Calculate extrema during the first pass if it's possible
     # to use counting sort.
@@ -70,15 +70,46 @@ function _quicksort!(
     # first pass.
 
     # Compute sizes of each partition for each chunks.
-    chunks = zip(_partition(xs, alg.basesize), _partition(cs, alg.basesize))
-    results = maptasks(partition_sizes!(pivot, order), chunks)
-    nbelows::Vector{Int} = map(first, results)
-    nequals::Vector{Int} = map(last, results)
-    naboves::Vector{Int} =
-        [length(c) - (b + e) for (b, e, (c, _)) in zip(nbelows, nequals, chunks)]
-    @check length(chunks) == length(nbelows) == length(nequals) == length(naboves)
-    @check all(>=(0), naboves)
-    singleton_chunkid = map(nbelows, nequals, naboves) do nb, ne, na
+    xs_chunk_list = _partition(xs, chunksize)
+    cs_chunk_list = _partition(cs, chunksize)
+    nchunks = cld(length(xs), chunksize)
+    nbelows = Vector{Int}(undef, nchunks)
+    nequals = Vector{Int}(undef, nchunks)
+    naboves = Vector{Int}(undef, nchunks)
+    @DBG begin
+        VERSION >= v"1.4" &&
+            @check length(xs_chunk_list) == length(cs_chunk_list) == nchunks
+        fill!(nbelows, -1)
+        fill!(nequals, -1)
+        fill!(naboves, -1)
+    end
+    @sync for (nb, ne, na, xs_chunk, cs_chunk) in zip(
+        referenceable(nbelows),
+        referenceable(nequals),
+        referenceable(naboves),
+        xs_chunk_list,
+        cs_chunk_list,
+    )
+        @spawn partition_sizes!(nb, ne, na, xs_chunk, cs_chunk, pivot, order)
+    end
+    @DBG begin
+        @check all(>=(0), nbelows)
+        @check all(>=(0), nequals)
+        @check all(>=(0), naboves)
+    end
+
+    below_offsets = nbelows
+    equal_offsets = nequals
+    above_offsets = naboves
+    acc = exclusive_cumsum!(below_offsets)
+    acc = exclusive_cumsum!(equal_offsets, acc)
+    acc = exclusive_cumsum!(above_offsets, acc)
+    @check acc == length(xs)
+
+    @inline function singleton_chunkid(i)
+        nb = @inbounds get(below_offsets, i + 1, equal_offsets[1]) - below_offsets[i]
+        ne = @inbounds get(equal_offsets, i + 1, above_offsets[1]) - equal_offsets[i]
+        na = @inbounds get(above_offsets, i + 1, length(ys)) - above_offsets[i]
         if (nb > 0) + (ne > 0) + (na > 0) == 1
             return 1 * (nb > 0) + 2 * (ne > 0) + 3 * (na > 0)
         else
@@ -86,17 +117,9 @@ function _quicksort!(
         end
     end
 
-    below_offsets = copy(nbelows)
-    equal_offsets = copy(nequals)
-    above_offsets = copy(naboves)
-    acc = exclusive_cumsum!(below_offsets)
-    acc = exclusive_cumsum!(equal_offsets, acc)
-    acc = exclusive_cumsum!(above_offsets, acc)
-    @check acc == length(xs)
-
     @sync begin
-        for (i, (xs_chunk, cs_chunk)) in enumerate(chunks)
-            singleton_chunkid[i] > 0 && continue
+        for (i, (xs_chunk, cs_chunk)) in enumerate(zip(xs_chunk_list, cs_chunk_list))
+            singleton_chunkid(i) > 0 && continue
             @spawn unsafe_quicksort_scatter!(
                 ys,
                 xs_chunk,
@@ -106,13 +129,14 @@ function _quicksort!(
                 above_offsets[i],
             )
         end
-        for (i, (xs_chunk, _)) in enumerate(chunks)
-            singleton_chunkid[i] > 0 || continue
+        for (i, xs_chunk) in enumerate(xs_chunk_list)
+            sid = singleton_chunkid(i)
+            sid > 0 || continue
             idx = (
                 below_offsets[i]+1:get(below_offsets, i + 1, equal_offsets[1]),
                 equal_offsets[i]+1:get(equal_offsets, i + 1, above_offsets[1]),
                 above_offsets[i]+1:get(above_offsets, i + 1, length(ys)),
-            )[singleton_chunkid[i]]
+            )[sid]
             # There is only one partition. Short-circuit scattering.
             ys_chunk = view(ys, idx)
             copyto!(ys_chunk, xs_chunk)
@@ -155,7 +179,85 @@ function _quicksort!(
     return ys_is_result ? ys : xs
 end
 
-partition_sizes!(pivot, order) = ((xs, cs),) -> partition_sizes!(xs, cs, pivot, order)
+function _quicksort_serial!(
+    ys,
+    xs,
+    alg,
+    order,
+    cs = Vector{Int8}(undef, length(ys)),
+    ys_is_result = true,
+    mutable_xs = false,
+)
+    # @check length(ys) == length(xs)
+    if length(ys) <= max(8, alg.smallsize)
+        if ys_is_result
+            zs = copyto!(ys, xs)
+        else
+            zs = xs
+        end
+        return sort!(zs, alg.smallsort, order)
+    end
+    pivot = _median(
+        order,
+        (
+            xs[1],
+            xs[end÷8],
+            xs[end÷4],
+            xs[3*(end÷8)],
+            xs[end÷2],
+            xs[5*(end÷8)],
+            xs[3*(end÷4)],
+            xs[7*(end÷8)],
+            xs[end],
+        ),
+    )
+
+    (nbelows, nequals) = partition_sizes!(xs, cs, pivot, order)
+    if nequals == length(xs)
+        if ys_is_result
+            copyto!(ys, xs)
+            return ys
+        else
+            return xs
+        end
+    end
+    @assert nequals > 0
+    below_offset = 0
+    equal_offset = nbelows
+    above_offset = nbelows + nequals
+    unsafe_quicksort_scatter!(ys, xs, cs, below_offset, equal_offset, above_offset)
+
+    below = 1:equal_offset
+    above = above_offset+1:length(xs)
+    ya = view(ys, above)
+    yb = view(ys, below)
+    ca = view(cs, above)
+    cb = view(cs, below)
+    if mutable_xs
+        _quicksort_serial!(view(xs, above), ya, alg, order, ca, !ys_is_result, true)
+        _quicksort_serial!(view(xs, below), yb, alg, order, cb, !ys_is_result, true)
+    else
+        let zs = similar(ys)
+            _quicksort_serial!(view(zs, above), ya, alg, order, ca, !ys_is_result, true)
+            _quicksort_serial!(view(zs, below), yb, alg, order, cb, !ys_is_result, true)
+        end
+    end
+    if !ys_is_result
+        let idx = equal_offset+1:above_offset
+            copyto!(view(xs, idx), view(ys, idx))
+        end
+    end
+
+    return ys_is_result ? ys : xs
+end
+
+function partition_sizes!(nbelows, nequals, naboves, xs, cs, pivot, order)
+    (nb, ne) = partition_sizes!(xs, cs, pivot, order)
+    nbelows[] = nb
+    nequals[] = ne
+    naboves[] = length(xs) - (nb + ne)
+    return
+end
 
 function partition_sizes!(xs, cs, pivot, order)
     nbelows = 0
