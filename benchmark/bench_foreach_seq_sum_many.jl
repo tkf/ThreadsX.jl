@@ -23,10 +23,10 @@ end
 
 @noinline foreach_sum_many!(vecs::NTuple{N,AbstractArray}, simd) where {N} =
     let nvecs = Val(N)
-        @inline function loop_body!(j)
+        @inline function loop_body!(i)
             sums = cumsumargs(map(a -> (@inbounds a[i]), vecs)...)
             @inline update!(j) = @inbounds vecs[j][i] = sums[j]
-            ntuple(update!, Val(N))
+            ntuple(update!, nvecs)
         end
         ThreadsX.Implementations.foreach_linear_seq(loop_body!, eachindex(vecs...), simd)
     end
