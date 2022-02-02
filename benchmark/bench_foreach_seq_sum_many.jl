@@ -16,23 +16,19 @@ using ThreadsX
 @noinline function manual_sum_many!(vecs::NTuple{N,AbstractArray}) where {N}
     @simd ivdep for i in eachindex(vecs...)
         sums = cumsumargs(map(a -> (@inbounds a[i]), vecs)...)
-        ntuple(Val(N)) do j
-            Base.@_inline_meta
-            @inbounds vecs[j][i] = sums[j]
-        end
+        @inline update!(j) = @inbounds vecs[j][i] = sums[j]
+        ntuple(update!, Val(N))
     end
 end
 
 @noinline foreach_sum_many!(vecs::NTuple{N,AbstractArray}, simd) where {N} =
     let nvecs = Val(N)
-        ThreadsX.Implementations.foreach_linear_seq(eachindex(vecs...), simd) do i
-            Base.@_inline_meta
+        @inline function loop_body!(j)
             sums = cumsumargs(map(a -> (@inbounds a[i]), vecs)...)
-            ntuple(nvecs) do j
-                Base.@_inline_meta
-                @inbounds vecs[j][i] = sums[j]
-            end
+            @inline update!(j) = @inbounds vecs[j][i] = sums[j]
+            ntuple(update!, Val(N))
         end
+        ThreadsX.Implementations.foreach_linear_seq(loop_body!, eachindex(vecs...), simd)
     end
 
 suite = BenchmarkGroup()
