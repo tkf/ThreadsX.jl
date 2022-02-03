@@ -32,10 +32,8 @@ function ThreadsX.map(
 end
 
 function ThreadsX.map!(f, dest, array, arrays...; kw...)
-    ThreadsX.foreach(referenceable(dest), array, arrays...; kw...) do y, xs...
-        Base.@_inline_meta
-        y[] = f(xs...)
-    end
+    @inline map_body!(y, xs...) = y[] = f(xs...)
+    ThreadsX.foreach(map_body!, referenceable(dest), array, arrays...; kw...)
     return dest
 end
 

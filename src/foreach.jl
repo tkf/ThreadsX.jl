@@ -97,16 +97,16 @@ for simd in [false, true, :ivdep]
     ) where {F,N,M} = $(_simdify_if(simd, body))
 end
 
-ThreadsX.foreach(
+function ThreadsX.foreach(
     f,
     array::AbstractArray{<:Any,N},
     arrays::AbstractArray{<:Any,N}...;
     kw...,
-) where {N} =
-    ThreadsX.foreach(eachindex(array, arrays...); kw...) do i
-        Base.@_inline_meta
+) where {N}
+    @inline foreach_body!(i) =
         f((@inbounds array[i]), map(x -> (@inbounds x[i]), arrays)...)
-    end
+    ThreadsX.foreach(foreach_body!, eachindex(array, arrays...); kw...)
+end
 
 #=
 ThreadsX.foreach(f, array::AbstractArray, arrays::AbstractArray; kw...) =
