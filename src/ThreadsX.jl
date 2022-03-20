@@ -44,6 +44,7 @@ using BangBang: SingletonVector, append!!, push!!, union!!
 using Base:
     HasShape, IteratorSize, Ordering, add_sum, mapreduce_empty, mul_prod, reduce_empty
 using ConstructionBase: setproperties
+using ExternalDocstrings: @define_docstrings
 using InitialValues: asmonoid
 using MicroCollections: EmptyVector
 using Referenceables: referenceable
@@ -99,6 +100,6 @@ const QuickSort = Implementations.ParallelQuickSortAlg()
 const StableQuickSort =
     Implementations.ParallelQuickSortAlg(smallsort = MergeSort.smallsort)
 
-Implementations.define_docstrings()
+Implementations.@define_docstrings
 
 end # baremodule ThreadX
