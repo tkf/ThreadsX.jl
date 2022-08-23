@@ -38,9 +38,9 @@ version = "1.3.1"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "9be8be1d8a6f44b96482c8af52238ea7987da3e3"
+git-tree-sha1 = "78bee250c6826e1cf805a88b7f1e86025275d208"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.45.0"
+version = "3.46.0"
 
 [[CompositionsBase]]
 git-tree-sha1 = "455419f7e328a1a2493cabc6428d79e951349769"
@@ -49,9 +49,9 @@ version = "0.1.1"
 
 [[ConstructionBase]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "59d00b3139a9de4eb961057eabb65ac6522be954"
+git-tree-sha1 = "fb21ddd70a051d882a1686a5a550990bbe371a95"
 uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-version = "1.4.0"
+version = "1.4.1"
 
 [[DataAPI]]
 git-tree-sha1 = "fb5f5316dd3fd4c5e7c30a24d50643b73e37cd40"
