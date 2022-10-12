@@ -1,4 +1,4 @@
-# Each file of the form "bench_$(name).jl" in this directory is `include`d and
+# Each file of the form "bench_$(name).jl" in this directory is `included` and
 # its last statement is assumed to be a `BenchmarkGroup`.  This group is added
 # to the top-level group `SUITE` with the `$name` extracted from the file name.
 
