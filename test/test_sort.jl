@@ -1,8 +1,10 @@
 module TestSort
 
+using Base.Order: Forward
 using Random: shuffle
 using Test
 using ThreadsX
+using ThreadsX.Implementations: refine_pivot
 
 @testset for basesize in 1:8
     @testset for alg in [ThreadsX.MergeSort, ThreadsX.QuickSort, ThreadsX.StableQuickSort]
@@ -46,6 +48,11 @@ end
         @test sort!(xs; alg = alg) === xs
         @test issorted(xs)
     end
+end
+
+@testset "refine_pivot" begin
+    @test refine_pivot([0, 1, 2, 3], 0, 1, Forward) == (1, false)
+    @test refine_pivot([0, 0, 0, 0], 0, 1, Forward) == (0, true)
 end
 
 randnans(n) = reinterpret(Float64, [rand(UInt64) | 0x7ff8000000000000 for i in 1:n])

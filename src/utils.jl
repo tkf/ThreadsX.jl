@@ -1,3 +1,9 @@
+@static if VERSION >= v"1.8"
+    @eval const $(Symbol("@_inline_meta")) = $(Symbol("@inline"))
+else
+    using Base: @_inline_meta
+end
+
 function adhoc_partition(xs, n)
     @check firstindex(xs) == 1
     m = cld(length(xs), n)
@@ -30,6 +36,8 @@ function elsizeof(::Type{T}) where {T}
         return sizeof(Ptr{Any})
     end
 end
+
+eq(order, a, b) = !(Base.lt(order, a, b) || Base.lt(order, b, a))
 
 function _median(order, (a, b, c)::NTuple{3,Any})
     # Sort `(a, b, c)`:
