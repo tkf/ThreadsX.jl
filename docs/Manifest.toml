@@ -148,10 +148,10 @@ uuid = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
 version = "0.6.8"
 
 [[FillArrays]]
-deps = ["LinearAlgebra", "Random", "SparseArrays", "Statistics"]
-git-tree-sha1 = "deed294cde3de20ae0b2e0355a6c4e1c6a5ceffc"
+deps = ["LinearAlgebra", "Random", "SparseArrays"]
+git-tree-sha1 = "ff537e5a3cba92fb48f30fec46723510450f2c0e"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "0.12.8"
+version = "0.10.2"
 
 [[Future]]
 deps = ["Random"]
@@ -258,9 +258,9 @@ version = "0.3.7"
 
 [[OnlineStats]]
 deps = ["AbstractTrees", "Dates", "Distributions", "LinearAlgebra", "OnlineStatsBase", "OrderedCollections", "Random", "RecipesBase", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "ad415596752eff23b0b70b453c9805e560b209d3"
+git-tree-sha1 = "ccbed5b6aa0d819621d1e0637d90c8020fea7428"
 uuid = "a15396b6-48d5-5d58-9928-6d29437db91e"
-version = "1.6.1"
+version = "1.6.2"
 
 [[OnlineStatsBase]]
 deps = ["AbstractTrees", "Dates", "LinearAlgebra", "OrderedCollections", "Statistics", "StatsBase"]
