@@ -1,4 +1,4 @@
-    ThreadsX.mapi(f, iterators...; basesize)
+    ThreadsX.map(f, iterators...; basesize)
 
 Parallelized `map(f, iterators...)`.  Input collections `iterators`
 must support `SplittablesBase.halve`
