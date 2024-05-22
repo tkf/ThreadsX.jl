@@ -257,9 +257,9 @@ version = "0.3.7"
 
 [[OnlineStats]]
 deps = ["AbstractTrees", "Dates", "Distributions", "LinearAlgebra", "OnlineStatsBase", "OrderedCollections", "Random", "RecipesBase", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "d3f41f18b9abaa2c64e8e0c43921df9b61ec8d02"
+git-tree-sha1 = "29f0e2b369c22190f2500b4fe5af49052c3f0c3b"
 uuid = "a15396b6-48d5-5d58-9928-6d29437db91e"
-version = "1.6.3"
+version = "1.7.0"
 
 [[OnlineStatsBase]]
 deps = ["AbstractTrees", "Dates", "LinearAlgebra", "OrderedCollections", "Statistics", "StatsBase"]
